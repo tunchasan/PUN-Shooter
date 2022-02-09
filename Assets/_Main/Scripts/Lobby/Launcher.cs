@@ -11,6 +11,7 @@ namespace Com.MyCompany.MyGame
         /// <summary>
         /// The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created.
         /// </summary>
+        [Header("@Configurations")]
         [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
         [SerializeField]
         private byte maxPlayersPerRoom = 4;
@@ -21,6 +22,15 @@ namespace Com.MyCompany.MyGame
         [Tooltip("When a room created, the roomName will assign as the room name.")]
         [SerializeField]
         private string roomName = "";
+        
+        [Header("@References")]
+        [Tooltip("The Ui Panel to let the user enter name, connect and play")]
+        [SerializeField]
+        private GameObject controlPanel;
+        
+        [Tooltip("The UI Label to inform the user that the connection is in progress")]
+        [SerializeField]
+        private GameObject progressLabel;
         
         #endregion
 
@@ -44,7 +54,7 @@ namespace Com.MyCompany.MyGame
 
         private void Start()
         {
-            Connect();
+            SetUIContentVisibilities(false, true);
         }
 
         #endregion
@@ -58,6 +68,8 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         public void Connect()
         {
+            SetUIContentVisibilities(true, false);
+            
             // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
             if (PhotonNetwork.IsConnected)
             {
@@ -73,17 +85,31 @@ namespace Com.MyCompany.MyGame
         }
 
         #endregion
+
+        #region Private Methods
+
+        private void SetUIContentVisibilities(bool shouldShowProgressPanel, bool shouldShowControlPanel)
+        {
+            progressLabel.SetActive(shouldShowProgressPanel);
+            controlPanel.SetActive(shouldShowControlPanel);
+        }
+
+        #endregion
         
         #region MonoBehaviourPunCallbacks Callbacks
 
         public override void OnConnectedToMaster()
         {
+            SetUIContentVisibilities(false, false);
+
             Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
         }
 
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+            SetUIContentVisibilities(false, true);
+
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
         }
         
