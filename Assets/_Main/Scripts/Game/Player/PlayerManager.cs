@@ -27,6 +27,10 @@ namespace Com.MyCompany.MyGame
         
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
+        
+        [Tooltip("The Player's UI GameObject Prefab")]
+        [SerializeField]
+        public GameObject PlayerUiPrefab;
 
         #endregion
         
@@ -75,6 +79,16 @@ namespace Com.MyCompany.MyGame
             // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
             #endif
+            
+            if (PlayerUiPrefab != null)
+            {
+                var _uiGo =  Instantiate(PlayerUiPrefab);
+                _uiGo.SendMessage ("SetTarget", this, SendMessageOptions.RequireReceiver);
+            }
+            else
+            {
+                Debug.LogWarning("<Color=Red><a>Missing</a></Color> PlayerUiPrefab reference on player Prefab.", this);
+            }
         }
 
         /// <summary>
@@ -149,6 +163,9 @@ namespace Com.MyCompany.MyGame
             // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
             if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
                 transform.position = new Vector3(0f, 5f, 0f);
+            
+            var _uiGo = Instantiate(this.PlayerUiPrefab);
+            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
         }
         
         #endregion
