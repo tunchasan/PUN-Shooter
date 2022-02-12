@@ -107,15 +107,15 @@ namespace Com.MyCompany.MyGame
 
         public override void OnConnectedToMaster()
         {
-            SetUIContentVisibilities(false, false);
-            
-            Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
-            
             // we don't want to do anything if we are not attempting to join a room.
             // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
             // we don't want to do anything.
             if (isConnecting)
             {
+                SetUIContentVisibilities(false, false);
+            
+                Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+                
                 // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
                 PhotonNetwork.JoinRandomRoom();
                 isConnecting = false;
