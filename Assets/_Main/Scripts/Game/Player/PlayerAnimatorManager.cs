@@ -1,8 +1,9 @@
+using Photon.Pun;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerAnimatorManager : MonoBehaviour
+    public class PlayerAnimatorManager : MonoBehaviourPun
     {
         #region Private Serializable Fields
 
@@ -31,6 +32,9 @@ namespace Com.MyCompany.MyGame
         // Update is called once per frame
         private void Update()
         {
+            if (photonView.IsMine == false && PhotonNetwork.IsConnected)
+                return;
+            
             if (!_animator)
                 return;
             

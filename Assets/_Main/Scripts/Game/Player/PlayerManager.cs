@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 
 namespace Com.MyCompany.MyGame
 {
@@ -7,7 +8,7 @@ namespace Com.MyCompany.MyGame
     /// Player manager.
     /// Handles fire Input and Beams.
     /// </summary>
-    public class PlayerManager : MonoBehaviourPunCallbacks
+    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Private Fields
 
@@ -22,7 +23,6 @@ namespace Com.MyCompany.MyGame
 
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
-        
         
 
         #endregion
@@ -41,6 +41,23 @@ namespace Com.MyCompany.MyGame
             else
             {
                 beams.SetActive(false);
+            }
+        }
+
+        private void Start()
+        {
+            var cameraWork = gameObject.GetComponent<CameraWork>();
+
+            if (cameraWork != null)
+            {
+                if (photonView.IsMine)
+                {
+                    cameraWork.OnStartFollowing();
+                }
+            }
+            else
+            {
+                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
             }
         }
 
@@ -109,6 +126,24 @@ namespace Com.MyCompany.MyGame
             {
                 if (IsFiring)
                     IsFiring = false;
+            }
+        }
+
+        #endregion
+
+        #region IPunObservable implementation
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(IsFiring);
+                stream.SendNext(Health);
+            }
+            else
+            {
+                this.IsFiring = (bool) stream.ReceiveNext();
+                this.Health = (float) stream.ReceiveNext();
             }
         }
 
