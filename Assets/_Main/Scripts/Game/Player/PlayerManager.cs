@@ -17,6 +17,7 @@ namespace Com.MyCompany.MyGame
         private GameObject beams;
         //True, when the user is firing
         private bool IsFiring;
+        
         #endregion
 
         #region Public Fields
@@ -24,6 +25,8 @@ namespace Com.MyCompany.MyGame
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
         
+        [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+        public static GameObject LocalPlayerInstance;
 
         #endregion
         
@@ -59,6 +62,19 @@ namespace Com.MyCompany.MyGame
             {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
             }
+            
+            // #Important
+            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+            if (photonView.IsMine)
+                LocalPlayerInstance = gameObject;
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(gameObject);
+            
+            #if UNITY_5_4_OR_NEWER
+            // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+            #endif
         }
 
         /// <summary>
@@ -107,6 +123,34 @@ namespace Com.MyCompany.MyGame
             Health -= 0.1f * Time.deltaTime;
         }
 
+        #if !UNITY_5_4_OR_NEWER
+        
+        /// <summary>See CalledOnLevelWasLoaded. Outdated in Unity 5.4.</summary>
+        private void OnLevelWasLoaded(int level)
+        {
+            this.CalledOnLevelWasLoaded(level);
+        }
+        
+        #endif
+
+        #if UNITY_5_4_OR_NEWER
+        
+        public override void OnDisable()
+        {
+            // Always call the base to remove callbacks
+            base.OnDisable ();
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+        
+        #endif
+
+        private void CalledOnLevelWasLoaded(int level)
+        {
+            // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
+            if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+                transform.position = new Vector3(0f, 5f, 0f);
+        }
+        
         #endregion
 
         #region Custom
@@ -146,6 +190,17 @@ namespace Com.MyCompany.MyGame
                 this.Health = (float) stream.ReceiveNext();
             }
         }
+
+        #endregion
+
+        #region Private Methods
+
+        #if UNITY_5_4_OR_NEWER
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
+        {
+            this.CalledOnLevelWasLoaded(scene.buildIndex);
+        }
+        #endif
 
         #endregion
     }
