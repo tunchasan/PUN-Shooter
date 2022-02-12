@@ -394,41 +394,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1862489339 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1163090757147563949, guid: bc2833361baa7b54bbc1181c4c5ae18f, type: 3}
-  m_PrefabInstance: {fileID: 1163090758573572950}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1862489342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1862489339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00b5c238465002a488e2bb6067f18c79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  directionDampTime: 0.25
---- !u!114 &1862489344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1862489339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 867cc1f7ddaa890429e6ac6a596d83a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  distance: 5
-  height: 3
-  centerOffset: {x: 0, y: 2, z: -2}
-  followOnStart: 1
-  smoothSpeed: 0.125
 --- !u!1001 &1163090758573572950
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -436,6 +401,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 709622367956273526, guid: bc2833361baa7b54bbc1181c4c5ae18f, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1163090757147563949, guid: bc2833361baa7b54bbc1181c4c5ae18f, type: 3}
       propertyPath: m_Name
       value: MyRobotKyle

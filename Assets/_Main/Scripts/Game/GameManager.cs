@@ -52,6 +52,21 @@ namespace Com.MyCompany.MyGame
         }
 
         #endregion
+
+        #region Public Fields
+
+        public static GameManager Instance;
+
+        #endregion
+
+        #region MonobehaviourCallbacks
+
+        private void Start()
+        {
+            Instance = this;
+        }
+
+        #endregion
         
         #region Private Methods
 
