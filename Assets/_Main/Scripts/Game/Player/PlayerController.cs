@@ -1,6 +1,5 @@
 using UnityEngine;
 using Photon.Pun;
-using Photon.Pun.Demo.PunBasics;
 
 namespace Com.MyCompany.MyGame
 {
@@ -8,16 +7,25 @@ namespace Com.MyCompany.MyGame
     /// Player manager.
     /// Handles fire Input and Beams.
     /// </summary>
-    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
+    
+    [RequireComponent(typeof(PlayerCameraController))]
+    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
-        #region Private Fields
+        #region Private Serialized Fields
 
         [Tooltip("The Beams GameObject to control")]
         [SerializeField]
         private GameObject beams;
+
+        #endregion
+
+        #region Private Fields
+
         //True, when the user is firing
-        private bool IsFiring;
-        
+        private bool _isFiring = false;
+
+        private PlayerCameraController _cameraController = null;
+
         #endregion
 
         #region Public Fields
@@ -41,6 +49,8 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void Awake()
         {
+            _cameraController = GetComponent<PlayerCameraController>();
+            
             if (beams == null)
             {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> Beams Reference.", this);
@@ -53,19 +63,8 @@ namespace Com.MyCompany.MyGame
 
         private void Start()
         {
-            var cameraWork = gameObject.GetComponent<CameraWork>();
-
-            if (cameraWork != null)
-            {
-                if (photonView.IsMine)
-                {
-                    cameraWork.OnStartFollowing();
-                }
-            }
-            else
-            {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
-            }
+            // Validate Camera Visibility
+            _cameraController.ValidateStatus(photonView.IsMine);
             
             // #Important
             // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
@@ -74,6 +73,8 @@ namespace Com.MyCompany.MyGame
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
+            
+            //Debug.LogError(transform.parent.name);
             
             #if UNITY_5_4_OR_NEWER
             // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
@@ -105,8 +106,8 @@ namespace Com.MyCompany.MyGame
                     GameManager.Instance.LeaveRoom();
                 
                 // trigger Beams active state
-                if (beams != null && IsFiring != beams.activeInHierarchy)
-                    beams.SetActive(IsFiring);
+                if (beams != null && _isFiring != beams.activeInHierarchy)
+                    beams.SetActive(_isFiring);
             }
         }
 
@@ -179,14 +180,14 @@ namespace Com.MyCompany.MyGame
         {
             if (Input.GetButtonDown("Fire1"))
             {
-                if (!IsFiring)
-                    IsFiring = true;
+                if (!_isFiring)
+                    _isFiring = true;
             }
             
             if (Input.GetButtonUp("Fire1"))
             {
-                if (IsFiring)
-                    IsFiring = false;
+                if (_isFiring)
+                    _isFiring = false;
             }
         }
 
@@ -198,12 +199,12 @@ namespace Com.MyCompany.MyGame
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(IsFiring);
+                stream.SendNext(_isFiring);
                 stream.SendNext(Health);
             }
             else
             {
-                this.IsFiring = (bool) stream.ReceiveNext();
+                this._isFiring = (bool) stream.ReceiveNext();
                 this.Health = (float) stream.ReceiveNext();
             }
         }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerUI : MonoBehaviour
+    public class PlayerUIController : MonoBehaviour
     {
         #region Private Serializable Fields
 
@@ -20,7 +20,7 @@ namespace Com.MyCompany.MyGame
 
         #region Private Fields
 
-        private PlayerManager target = null;
+        private PlayerController target = null;
         
         private float characterControllerHeight = 0f;
         private Transform targetTransform;
@@ -85,7 +85,7 @@ namespace Com.MyCompany.MyGame
 
         #region Public Methods
 
-        public void SetTarget(PlayerManager _target)
+        public void SetTarget(PlayerController _target)
         {
             if (_target == null)
             {

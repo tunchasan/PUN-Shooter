@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerAnimatorManager : MonoBehaviourPun
+    public class PlayerAnimationController : MonoBehaviourPun
     {
         #region Private Serializable Fields
 
