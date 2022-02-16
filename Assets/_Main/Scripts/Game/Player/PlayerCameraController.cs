@@ -16,7 +16,7 @@ namespace Com.MyCompany.MyGame
         #region Private Fields
         
         [Tooltip("Stores Player's Initial TPS Camera Settings")]
-        private CameraPreset _initialPreset = null;
+        private CameraPreset _initialPreset = new CameraPreset();
 
         [Tooltip("Stores playerCamera Animations Tween")]
         private Tween[] _cameraAnimations = new Tween[3];
