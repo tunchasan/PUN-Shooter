@@ -52,7 +52,7 @@ namespace Com.MyCompany.MyGame
             // Reflect the Player Health
             if (playerHealthSlider != null)
             {
-                playerHealthSlider.value = target.Health;
+                //playerHealthSlider.value = target.Health;
             }
             
             // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
