@@ -57,3 +57,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043c3332acb7edc4792ac75ef15b4b2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  presets:
+  - title: Preset Idle
+    state: 1
+    fieldOfView: 60
+    position: {x: 0, y: 2.25, z: -3}
+    rotation: {x: 10, y: 0, z: 0}
+  - title: Preset Jump
+    state: 2
+    fieldOfView: 60
+    position: {x: 0, y: 2.75, z: -3}
+    rotation: {x: 18, y: 0, z: 0}
+  - title: Preset Run
+    state: 3
+    fieldOfView: 0
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+  - title: Preset Aim
+    state: 4
+    fieldOfView: 0
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+  - title: Preset Shoot
+    state: 5
+    fieldOfView: 0
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+  - title: Preset Death
+    state: 6
+    fieldOfView: 0
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
