@@ -1,8 +1,7 @@
 using Com.MyCompany.MyGame;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerController), 
-    typeof(PlayerAnimationController))]
+[RequireComponent(typeof(PlayerController))]
 public class PlayerBase : MonoBehaviour
 {
     public Enums.PlayerStates CurrentState { get; private set; } = Enums.PlayerStates.None;

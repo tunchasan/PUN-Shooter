@@ -44,8 +44,12 @@ namespace Com.MyCompany.MyGame
             if (stateInfo.IsName("Base Layer.Run"))
             {
                 // When using trigger parameter
-                // if (Input.GetKey(KeyCode.Space))
-                //     _animator.SetTrigger("Jump");
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    
+                    
+                    _animator.SetTrigger("Jump");
+                }
             }
 
             var h = Input.GetAxis("Horizontal");

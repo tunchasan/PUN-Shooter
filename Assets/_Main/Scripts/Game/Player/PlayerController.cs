@@ -131,14 +131,12 @@ namespace Com.MyCompany.MyGame
         {
             if (Input.GetButtonDown("Fire1"))
             {
-                if (!_isFiring)
-                    _isFiring = true;
+                OnFireAction(true);
             }
             
             if (Input.GetButtonUp("Fire1"))
             {
-                if (_isFiring)
-                    _isFiring = false;
+                OnFireAction(false);
             }
         }
 
@@ -154,6 +152,19 @@ namespace Com.MyCompany.MyGame
                 Debug.LogWarning("<Color=Red><a>Missing</a></Color> " +
                                  "PlayerUiPrefab reference on player Prefab.", this);
         }
+
+        #region Actions
+
+        private void OnFireAction(bool status)
+        {
+            _isFiring = status;
+            
+            _cameraController.ProcessState(Enums.PlayerStates.OnShoot);
+            
+            Debug.Log(_isFiring ? "Fire" : "Not Fire");
+        }
+
+        #endregion
         
         #endregion
     }

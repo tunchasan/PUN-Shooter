@@ -18,8 +18,11 @@ namespace Com.MyCompany.MyGame
         [Tooltip("Stores Player's Initial TPS Camera Settings")]
         private CameraPreset _initialPreset = new CameraPreset();
 
-        [Tooltip("Stores playerCamera Animations Tween")]
+        [Tooltip("Stores playerCamera Animations as Tweens")]
         private Tween[] _cameraAnimations = new Tween[3];
+
+        [Tooltip("Stores playerCamera ShakeAnimation as Tween")]
+        private Tween _cameraShakeAnimation = null;
 
         #endregion
         
@@ -40,10 +43,14 @@ namespace Com.MyCompany.MyGame
         private void Animate(CameraPreset targetPreset)
         {
             StopAllAnimations();
-            _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, .5F);
-            _cameraAnimations[1] = playerCamera.transform.DOLocalRotate(targetPreset.rotation, .5F);
+            
+            _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, targetPreset.animDuration)
+                .SetEase(targetPreset.animType);
+            _cameraAnimations[1] = playerCamera.transform.DOLocalRotate(targetPreset.rotation, targetPreset.animDuration)
+                .SetEase(targetPreset.animType);
             _cameraAnimations[2] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
-                x => playerCamera.m_Lens.FieldOfView = x, targetPreset.fieldOfView, .5F);
+                x => playerCamera.m_Lens.FieldOfView = x, targetPreset.fieldOfView, targetPreset.animDuration)
+                .SetEase(targetPreset.animType);
         }
         
         private void StopAllAnimations()
@@ -54,7 +61,11 @@ namespace Com.MyCompany.MyGame
 
         private void ShakeCamera()
         {
-            // TODO
+            _cameraShakeAnimation?.Kill();
+            
+            _cameraShakeAnimation = 
+                playerCamera.transform.DOShakeRotation(.5F, 
+                    Random.Range(5F, 10F), 10, 15F);
         }
 
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
@@ -76,6 +87,9 @@ namespace Com.MyCompany.MyGame
 
         public void ProcessState(Enums.PlayerStates state)
         {
+            if(state == Enums.PlayerStates.OnShoot)
+                ShakeCamera();
+            
             Animate(DetermineCameraPreset(state));
         }
 
