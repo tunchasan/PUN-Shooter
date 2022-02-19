@@ -129,14 +129,40 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
+            // OnPlayerFires
             if (Input.GetButtonDown("Fire1"))
             {
                 OnFireAction(true);
             }
             
-            if (Input.GetButtonUp("Fire1"))
+            // OnPlayerNotFires
+            else if (Input.GetButtonUp("Fire1"))
             {
                 OnFireAction(false);
+            }
+
+            // OnPlayerMoves
+            if (IsMoving())
+            {
+                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            }
+
+            // OnPlayerIdle
+            else
+            {
+                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
+            }
+            
+            // OnPlayerAims
+            if (Input.GetButton("Fire2"))
+            {
+                OnAimAction(Input.mousePosition);
+            }
+            
+            // OnPlayerNotAims
+            else if (Input.GetButtonUp("Fire2"))
+            {
+                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
             }
         }
 
@@ -153,6 +179,14 @@ namespace Com.MyCompany.MyGame
                                  "PlayerUiPrefab reference on player Prefab.", this);
         }
 
+        private bool IsMoving()
+        {
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
+            v = v < 0 ? 0 : v;
+            return (h * h + v * v) > .1F;
+        }
+        
         #region Actions
 
         private void OnFireAction(bool status)
@@ -162,6 +196,13 @@ namespace Com.MyCompany.MyGame
             _cameraController.ProcessState(Enums.PlayerStates.OnShoot);
             
             Debug.Log(_isFiring ? "Fire" : "Not Fire");
+        }
+
+        private void OnAimAction(Vector2 aimPos)
+        {
+            _cameraController.ProcessState(Enums.PlayerStates.OnAim);
+            
+            Debug.LogFormat("On Aim at {0}", aimPos);
         }
 
         #endregion

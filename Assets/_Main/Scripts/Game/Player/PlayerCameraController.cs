@@ -21,6 +21,9 @@ namespace Com.MyCompany.MyGame
         [Tooltip("Stores playerCamera Animations as Tweens")]
         private Tween[] _cameraAnimations = new Tween[3];
 
+        [Tooltip("Stores processed CameraPreset")]
+        private CameraPreset _currentPreset = null;
+
         #endregion
         
         #region MonobehaviourCallbacks
@@ -31,6 +34,7 @@ namespace Com.MyCompany.MyGame
             _initialPreset.position = target.localPosition;
             _initialPreset.rotation = target.localEulerAngles;
             _initialPreset.fieldOfView = playerCamera.m_Lens.FieldOfView;
+            _currentPreset = _initialPreset;
         }
 
         #endregion
@@ -40,6 +44,8 @@ namespace Com.MyCompany.MyGame
         private void Animate(CameraPreset targetPreset)
         {
             StopAllAnimations();
+
+            _currentPreset = targetPreset;
             
             _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, targetPreset.animDuration)
                 .SetEase(targetPreset.animType);
@@ -81,8 +87,15 @@ namespace Com.MyCompany.MyGame
 
         public void ProcessState(Enums.PlayerStates state)
         {
-            if(state == Enums.PlayerStates.OnShoot)
+            if(_currentPreset.state == state) return;
+            
+            Debug.Log(state);
+            
+            if (state == Enums.PlayerStates.OnShoot)
+            {
                 ShakeCamera();
+                return;
+            }
             
             Animate(DetermineCameraPreset(state));
         }
