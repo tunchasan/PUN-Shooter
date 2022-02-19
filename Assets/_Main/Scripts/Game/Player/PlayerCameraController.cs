@@ -21,9 +21,6 @@ namespace Com.MyCompany.MyGame
         [Tooltip("Stores playerCamera Animations as Tweens")]
         private Tween[] _cameraAnimations = new Tween[3];
 
-        [Tooltip("Stores playerCamera ShakeAnimation as Tween")]
-        private Tween _cameraShakeAnimation = null;
-
         #endregion
         
         #region MonobehaviourCallbacks
@@ -61,11 +58,8 @@ namespace Com.MyCompany.MyGame
 
         private void ShakeCamera()
         {
-            _cameraShakeAnimation?.Kill();
-            
-            _cameraShakeAnimation = 
-                playerCamera.transform.DOShakeRotation(.5F, 
-                    Random.Range(5F, 10F), 10, 15F);
+            playerCamera.GetComponent<CinemachineImpulseSource>()
+                .GenerateImpulse(Random.Range(.75F, 1.25F));
         }
 
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
