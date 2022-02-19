@@ -1,6 +1,8 @@
+using System;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Com.MyCompany.MyGame
 {
@@ -68,6 +70,11 @@ namespace Com.MyCompany.MyGame
                 .GenerateImpulse(Random.Range(.75F, 1.25F));
         }
 
+        private void AddLookAtTarget(Transform target)
+        {
+            playerCamera.LookAt = target;
+        }
+
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
         {
             return state == Enums.PlayerStates.None ? 
@@ -85,19 +92,28 @@ namespace Com.MyCompany.MyGame
             playerCamera.gameObject.SetActive(status);
         }
 
-        public void ProcessState(Enums.PlayerStates state)
+        public void ProcessState(Enums.PlayerStates state, Transform target = null)
         {
             if(_currentPreset.state == state) return;
-            
-            Debug.Log(state);
-            
-            if (state == Enums.PlayerStates.OnShoot)
+
+            switch (state)
             {
-                ShakeCamera();
-                return;
+                case Enums.PlayerStates.OnShoot:
+                    ShakeCamera();
+                    break;
+                case Enums.PlayerStates.OnDeath:
+                    AddLookAtTarget(target);
+                    break;
+                case Enums.PlayerStates.None:
+                case Enums.PlayerStates.OnIdle:
+                case Enums.PlayerStates.OnJump:
+                case Enums.PlayerStates.OnRun:
+                case Enums.PlayerStates.OnAim:
+                    Animate(DetermineCameraPreset(state));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
-            
-            Animate(DetermineCameraPreset(state));
         }
 
         #endregion
