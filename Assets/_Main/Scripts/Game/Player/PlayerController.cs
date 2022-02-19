@@ -164,6 +164,10 @@ namespace Com.MyCompany.MyGame
             {
                 _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
             }
+            
+            // OnPlayerJumps
+            if(Input.GetKey(KeyCode.Space))
+                _cameraController.ProcessState(Enums.PlayerStates.OnJump);
         }
 
         /// <summary>

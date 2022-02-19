@@ -716,7 +716,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerUiPrefab: {fileID: 7666821509130482488, guid: d4d4979f37ca42e4d8c9ac0671b49bd4, type: 3}
-  tar: {fileID: 0}
 --- !u!143 &5991455572019861938
 CharacterController:
   m_ObjectHideFlags: 0

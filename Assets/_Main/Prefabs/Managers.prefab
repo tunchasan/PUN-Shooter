@@ -74,11 +74,11 @@ MonoBehaviour:
     rotation: {x: 15, y: 0, z: 0}
   - title: Preset Jump
     state: 2
-    fieldOfView: 60
-    animDuration: 0.5
-    animType: 1
+    fieldOfView: 65
+    animDuration: 0.6
+    animType: 18
     position: {x: 0, y: 2.75, z: -3}
-    rotation: {x: 18, y: 0, z: 0}
+    rotation: {x: 15, y: 0, z: 0}
   - title: Preset Aim
     state: 4
     fieldOfView: 50
