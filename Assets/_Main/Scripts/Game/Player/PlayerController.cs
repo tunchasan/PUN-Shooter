@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UIElements;
 
 namespace Com.MyCompany.MyGame
 {
@@ -65,7 +66,9 @@ namespace Com.MyCompany.MyGame
             LocalPlayerInstance = photonView.IsMine ? gameObject : LocalPlayerInstance;
 
             // Instantiate PlayerUI and Assign
-            InitializePlayerUI();
+            // InitializePlayerUI();
+
+            InitializeMovementSystem();
         }
 
         /// <summary>
@@ -133,45 +136,8 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
-            // OnPlayerFires
-            if (Input.GetButtonDown("Fire1"))
-            {
-                OnFireAction(true);
-            }
-            
-            // OnPlayerNotFires
-            else if (Input.GetButtonUp("Fire1"))
-            {
-                OnFireAction(false);
-            }
+            ValidateMovement();
 
-            // OnPlayerMoves
-            if (IsMoving())
-            {
-                OnMovementAction();
-            }
-
-            // OnPlayerIdle
-            else
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerAims
-            if (Input.GetButton("Fire2"))
-            {
-                OnAimAction(Input.mousePosition);
-            }
-            
-            // OnPlayerNotAims
-            else if (Input.GetButtonUp("Fire2"))
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerJumps
-            if(Input.GetKey(KeyCode.Space))
-                _cameraController.ProcessState(Enums.PlayerStates.OnJump);
         }
 
         /// <summary>
@@ -216,33 +182,52 @@ namespace Com.MyCompany.MyGame
 
         [Header("@MovementSystem")] 
         [SerializeField] private float rotationSpeed = 10F;
-
+        
         [SerializeField] private float speed = 10F;
         
-        private void OnMovementAction()
+        private Vector2 _lastMousePosition = Vector2.zero;
+
+        private void InitializeMovementSystem()
         {
-            _cameraController.ProcessState(Enums.PlayerStates.OnRun);
-            
-            var h = Input.GetAxis("Horizontal");
-            var v = Input.GetAxis("Vertical");
-            var direction = new Vector2(h, v);
-            var velocity = new Vector3(h, Physics.gravity.y, v);
-            _characterController.Move(velocity * (Time.deltaTime * speed));
-            
-            // Handle Rotation
-            var currentRotation = transform.rotation;
-            var targetRotation = ValidateRotation(direction);
-            
-            // transform.rotation = Quaternion.Lerp(currentRotation, targetRotation, 
-            //     Time.deltaTime * rotationSpeed);
+            _lastMousePosition = new Vector2(Screen.width / 2F, Screen.height / 2F);
         }
-        
-        private Quaternion ValidateRotation(Vector2 direction)
+
+        private void ValidateMovement()
         {
-            var targetRotation = 
-                Quaternion.Euler(new Vector3(0, Mathf.Atan2(direction.x, direction.y) * 180 / Mathf.PI, 0));
-    
-            return targetRotation;
+            //_cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            
+            var currentMousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            var delta = currentMousePosition - _lastMousePosition;
+            _lastMousePosition = currentMousePosition;
+            var rotationDirection = new Vector3(delta.x, 0F, delta.y).normalized;
+            
+            if (rotationDirection.magnitude > .1F)
+            {
+                var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
+                targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
+                targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
+                transform.RotateAround(transform.position, Vector3.up, targetRotationAngle * Time.deltaTime * rotationSpeed);
+                
+                // TODO
+                
+                // Rotate Camera Up / Down
+                
+                // Review Rotation Speed
+            }
+            
+            var moveHorizontalAxis = Input.GetAxis("Horizontal") * transform.right;
+            var moveVerticalAxis = Input.GetAxis("Vertical") * transform.forward;
+            var direction = new Vector3(moveHorizontalAxis.x + moveVerticalAxis.x, Physics.gravity.y,
+                moveHorizontalAxis.z + moveVerticalAxis.z);;
+            if (direction.magnitude > .1F)
+            {
+                var moveVelocity = direction * speed;
+                _characterController.Move(moveVelocity * Time.deltaTime);
+                
+                // TODO
+                
+                // Accelerated Motion
+            }
         }
 
         #endregion
