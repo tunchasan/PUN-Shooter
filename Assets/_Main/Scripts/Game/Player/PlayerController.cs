@@ -28,6 +28,8 @@ namespace Com.MyCompany.MyGame
         // "The current Health of our player"
         private float _health = 100F;
 
+        private CharacterController _characterController = null;
+
         #endregion
 
         #region Static Fields
@@ -45,6 +47,8 @@ namespace Com.MyCompany.MyGame
         private void Awake()
         {
             _cameraController = GetComponent<PlayerCameraController>();
+
+            _characterController = GetComponent<CharacterController>();
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -144,7 +148,7 @@ namespace Com.MyCompany.MyGame
             // OnPlayerMoves
             if (IsMoving())
             {
-                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+                OnMovementAction();
             }
 
             // OnPlayerIdle
@@ -187,7 +191,6 @@ namespace Com.MyCompany.MyGame
         {
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
-            v = v < 0 ? 0 : v;
             return (h * h + v * v) > .1F;
         }
         
@@ -208,6 +211,41 @@ namespace Com.MyCompany.MyGame
             
             Debug.LogFormat("On Aim at {0}", aimPos);
         }
+
+        #region Movement
+
+        [Header("@MovementSystem")] 
+        [SerializeField] private float rotationSpeed = 10F;
+
+        [SerializeField] private float speed = 10F;
+        
+        private void OnMovementAction()
+        {
+            _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
+            var direction = new Vector2(h, v);
+            var velocity = new Vector3(h, Physics.gravity.y, v);
+            _characterController.Move(velocity * (Time.deltaTime * speed));
+            
+            // Handle Rotation
+            var currentRotation = transform.rotation;
+            var targetRotation = ValidateRotation(direction);
+            
+            // transform.rotation = Quaternion.Lerp(currentRotation, targetRotation, 
+            //     Time.deltaTime * rotationSpeed);
+        }
+        
+        private Quaternion ValidateRotation(Vector2 direction)
+        {
+            var targetRotation = 
+                Quaternion.Euler(new Vector3(0, Mathf.Atan2(direction.x, direction.y) * 180 / Mathf.PI, 0));
+    
+            return targetRotation;
+        }
+
+        #endregion
 
         #endregion
         

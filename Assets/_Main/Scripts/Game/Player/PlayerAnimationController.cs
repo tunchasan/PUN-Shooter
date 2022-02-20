@@ -23,7 +23,7 @@ namespace Com.MyCompany.MyGame
         // Use this for initialization
         private void Start()
         {
-            _animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
             
             if (!_animator)
                 Debug.LogError("PlayerAnimatorManager is Missing Animator Component", this);
@@ -32,34 +32,34 @@ namespace Com.MyCompany.MyGame
         // Update is called once per frame
         private void Update()
         {
-            if (photonView.IsMine == false && PhotonNetwork.IsConnected)
-                return;
-            
             if (!_animator)
                 return;
             
-            // deal with Jumping
-            var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-            // only allow jumping if we are running.
-            if (stateInfo.IsName("Base Layer.Run"))
-            {
-                // When using trigger parameter
-                if (Input.GetKey(KeyCode.Space))
-                {
-                    
-                    
-                    _animator.SetTrigger("Jump");
-                }
-            }
-
-            var h = Input.GetAxis("Horizontal");
-            var v = Input.GetAxis("Vertical");
+            if (photonView.IsMine == false && PhotonNetwork.IsConnected)
+                return;
             
-            v = v < 0 ? 0 : v;
-
-            _animator.SetFloat("Speed", h * h + v * v);
-            
-            _animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
+            // // deal with Jumping
+            // var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            // // only allow jumping if we are running.
+            // if (stateInfo.IsName("Base Layer.Run"))
+            // {
+            //     // When using trigger parameter
+            //     if (Input.GetKey(KeyCode.Space))
+            //     {
+            //         
+            //         
+            //         _animator.SetTrigger("Jump");
+            //     }
+            // }
+            //
+            // var h = Input.GetAxis("Horizontal");
+            // var v = Input.GetAxis("Vertical");
+            //
+            // v = v < 0 ? 0 : v;
+            //
+            // _animator.SetFloat("Speed", h * h + v * v);
+            //
+            // _animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
         }
 
         #endregion

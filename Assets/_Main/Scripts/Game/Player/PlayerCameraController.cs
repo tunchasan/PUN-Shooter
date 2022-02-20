@@ -11,7 +11,7 @@ namespace Com.MyCompany.MyGame
         #region Private Serialized Fields
 
         [Tooltip("The Player's TPS Camera")]
-        [SerializeField] private CinemachineVirtualCamera playerCamera = null;
+        [SerializeField] private CinemachineFreeLook playerCamera = null;
 
         #endregion
 
