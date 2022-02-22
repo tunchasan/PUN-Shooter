@@ -60,36 +60,31 @@ MonoBehaviour:
   presets:
   - title: Preset Idle
     state: 1
-    fieldOfView: 60
+    fieldOfView: 50
     animDuration: 0.75
     animType: 6
     position: {x: 0, y: 2.5, z: -4.5}
-    rotation: {x: 10, y: 0, z: 0}
   - title: Preset Run
     state: 3
-    fieldOfView: 65
+    fieldOfView: 55
     animDuration: 0.5
     animType: 5
     position: {x: 0, y: 2.5, z: -4.5}
-    rotation: {x: 12, y: 0, z: 0}
   - title: Preset Jump
     state: 2
-    fieldOfView: 65
+    fieldOfView: 55
     animDuration: 0.5
     animType: 18
     position: {x: 0, y: 3, z: -4.5}
-    rotation: {x: 15, y: 0, z: 0}
   - title: Preset Aim
     state: 4
     fieldOfView: 50
     animDuration: 0.6
     animType: 18
     position: {x: 0.35, y: 2.5, z: -4}
-    rotation: {x: 10, y: 2, z: 0}
   - title: Preset Death
     state: 6
     fieldOfView: 0
     animDuration: 0.5
     animType: 1
     position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}

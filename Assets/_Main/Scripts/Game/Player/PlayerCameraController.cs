@@ -10,9 +10,12 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Serialized Fields
 
-        [Tooltip("The Player's TPS Camera")]
-        [SerializeField] private CinemachineFreeLook playerCamera = null;
+        [Tooltip("Stores camera vertical rotation limits")]
+        [SerializeField] private Vector2 cameraVerticalRotLimits = new Vector2(10F, 17.5F);
 
+        [Tooltip("The Player's TPS Camera")]
+        [SerializeField] private CinemachineVirtualCamera playerCamera = null;
+        
         #endregion
 
         #region Private Fields
@@ -21,7 +24,7 @@ namespace Com.MyCompany.MyGame
         private CameraPreset _initialPreset = new CameraPreset();
 
         [Tooltip("Stores playerCamera Animations as Tweens")]
-        private Tween[] _cameraAnimations = new Tween[3];
+        private Tween[] _cameraAnimations = new Tween[2];
 
         [Tooltip("Stores processed CameraPreset")]
         private CameraPreset _currentPreset = null;
@@ -34,7 +37,6 @@ namespace Com.MyCompany.MyGame
         {
             var target = playerCamera.transform;
             _initialPreset.position = target.localPosition;
-            _initialPreset.rotation = target.localEulerAngles;
             _initialPreset.fieldOfView = playerCamera.m_Lens.FieldOfView;
             _currentPreset = _initialPreset;
         }
@@ -51,9 +53,7 @@ namespace Com.MyCompany.MyGame
             
             _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, targetPreset.animDuration)
                 .SetEase(targetPreset.animType);
-            _cameraAnimations[1] = playerCamera.transform.DOLocalRotate(targetPreset.rotation, targetPreset.animDuration)
-                .SetEase(targetPreset.animType);
-            _cameraAnimations[2] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
+            _cameraAnimations[1] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
                 x => playerCamera.m_Lens.FieldOfView = x, targetPreset.fieldOfView, targetPreset.animDuration)
                 .SetEase(targetPreset.animType);
         }
@@ -90,6 +90,16 @@ namespace Com.MyCompany.MyGame
         {
             // Activates the camera if it's player itself
             playerCamera.gameObject.SetActive(status);
+        }
+
+        public void ValidateCameraRotation(float upWeight, float rotationSpeed)
+        {
+            var cameraXRotationLimit = upWeight > 0 ? cameraVerticalRotLimits.x : cameraVerticalRotLimits.y;
+            var currentRotation = playerCamera.transform.localEulerAngles;
+            var calculatedAlpha = Math.Abs(upWeight) * Time.deltaTime * rotationSpeed;
+            var calculatedXRotation = Mathf.Lerp(currentRotation.x, cameraXRotationLimit, calculatedAlpha);
+            var targetRotation = new Vector3(calculatedXRotation, currentRotation.y, currentRotation.z);
+            playerCamera.transform.localEulerAngles = targetRotation;
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)

@@ -181,7 +181,8 @@ namespace Com.MyCompany.MyGame
         #region Movement
 
         [Header("@MovementSystem")] 
-        [SerializeField] private float rotationSpeed = 10F;
+        [SerializeField] private float horizontalRotationSpeed = 10F;
+        [SerializeField] private float verticalRotationSpeed = 10F;
         
         [SerializeField] private float speed = 10F;
         
@@ -194,31 +195,32 @@ namespace Com.MyCompany.MyGame
 
         private void ValidateMovement()
         {
-            //_cameraController.ProcessState(Enums.PlayerStates.OnRun);
-            
             var currentMousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             var delta = currentMousePosition - _lastMousePosition;
+            var normalizedDelta = delta.normalized;
+            var rotationDirection = new Vector3(normalizedDelta.x, 0F, 0F);
             _lastMousePosition = currentMousePosition;
-            var rotationDirection = new Vector3(delta.x, 0F, delta.y).normalized;
             
-            if (rotationDirection.magnitude > .1F)
-            {
-                var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
-                targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
-                targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
-                transform.RotateAround(transform.position, Vector3.up, targetRotationAngle * Time.deltaTime * rotationSpeed);
-                
-                // TODO
-                
-                // Rotate Camera Up / Down
-                
-                // Review Rotation Speed
-            }
+            // Handle Camera Locomotion for "Run" state
+            _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            _cameraController.ValidateCameraRotation(normalizedDelta.y, verticalRotationSpeed);
             
+            // Handle Player Rotation
+            var currentRotation = transform.eulerAngles;
+            var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
+            targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
+            targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
+            var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
+            var calculatedAlpha = Time.deltaTime * horizontalRotationSpeed;
+            transform.eulerAngles = Vector3.Lerp(currentRotation, calculatedTargetRotation, calculatedAlpha);
+            
+            // Handle Player Movement
             var moveHorizontalAxis = Input.GetAxis("Horizontal") * transform.right;
             var moveVerticalAxis = Input.GetAxis("Vertical") * transform.forward;
-            var direction = new Vector3(moveHorizontalAxis.x + moveVerticalAxis.x, Physics.gravity.y,
-                moveHorizontalAxis.z + moveVerticalAxis.z);;
+            var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
+            var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
+            var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
+            
             if (direction.magnitude > .1F)
             {
                 var moveVelocity = direction * speed;
