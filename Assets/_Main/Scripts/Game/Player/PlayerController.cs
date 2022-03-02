@@ -26,6 +26,8 @@ namespace Com.MyCompany.MyGame
 
         private PlayerCameraController _cameraController = null;
         
+        private PlayerAnimationController _animationController = null;
+        
         // "The current Health of our player"
         private float _health = 100F;
 
@@ -50,6 +52,8 @@ namespace Com.MyCompany.MyGame
             _cameraController = GetComponent<PlayerCameraController>();
 
             _characterController = GetComponent<CharacterController>();
+
+            _animationController = GetComponent<PlayerAnimationController>();
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -136,8 +140,45 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
-            ValidateMovement();
+            // OnPlayerFires
+            if (Input.GetButtonDown("Fire1"))
+            {
+                OnFireAction(true);
+            }
+            
+            // OnPlayerNotFires
+            else if (Input.GetButtonUp("Fire1"))
+            {
+                OnFireAction(false);
+            }
 
+            // OnPlayerMoves
+            if (IsMoving())
+            {
+                ValidateMovement();
+            }
+
+            // OnPlayerIdle
+            else
+            {
+                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
+            }
+            
+            // OnPlayerAims
+            if (Input.GetButton("Fire2"))
+            {
+                OnAimAction(Input.mousePosition);
+            }
+            
+            // OnPlayerNotAims
+            else if (Input.GetButtonUp("Fire2"))
+            {
+                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
+            }
+            
+            // OnPlayerJumps
+            if(Input.GetKey(KeyCode.Space))
+                _cameraController.ProcessState(Enums.PlayerStates.OnJump);
         }
 
         /// <summary>
@@ -205,6 +246,35 @@ namespace Com.MyCompany.MyGame
             _cameraController.ProcessState(Enums.PlayerStates.OnRun);
             _cameraController.ValidateCameraRotation(normalizedDelta.y, verticalRotationSpeed);
             
+            ProcessRotation(rotationDirection);
+
+            ProcessMovement();
+        }
+
+        private void ProcessMovement()
+        {
+            // Handle Player Movement
+            var moveHorizontalAxis = Input.GetAxis("Horizontal") * transform.right;
+            var moveVerticalAxis = Input.GetAxis("Vertical") * transform.forward;
+            var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
+            var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
+            var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
+            
+            _animationController.ProcessDirection(new Vector2(directionX, directionZ));
+            
+            if (direction.magnitude > .1F)
+            {
+                var moveVelocity = direction * speed;
+                _characterController.Move(moveVelocity * Time.deltaTime);
+
+                // TODO
+
+                // Accelerated Motion
+            }
+        }
+
+        private void ProcessRotation(Vector3 rotationDirection)
+        {
             // Handle Player Rotation
             var currentRotation = transform.eulerAngles;
             var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
@@ -213,23 +283,6 @@ namespace Com.MyCompany.MyGame
             var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
             var calculatedAlpha = Time.deltaTime * horizontalRotationSpeed;
             transform.eulerAngles = Vector3.Lerp(currentRotation, calculatedTargetRotation, calculatedAlpha);
-            
-            // Handle Player Movement
-            var moveHorizontalAxis = Input.GetAxis("Horizontal") * transform.right;
-            var moveVerticalAxis = Input.GetAxis("Vertical") * transform.forward;
-            var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
-            var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
-            var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
-            
-            if (direction.magnitude > .1F)
-            {
-                var moveVelocity = direction * speed;
-                _characterController.Move(moveVelocity * Time.deltaTime);
-                
-                // TODO
-                
-                // Accelerated Motion
-            }
         }
 
         #endregion

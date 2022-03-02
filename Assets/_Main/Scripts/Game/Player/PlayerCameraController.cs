@@ -103,7 +103,7 @@ namespace Com.MyCompany.MyGame
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)
-        {
+        { 
             if(_currentPreset.state == state) return;
 
             switch (state)

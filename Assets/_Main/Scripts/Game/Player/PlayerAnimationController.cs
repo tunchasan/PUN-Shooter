@@ -15,6 +15,8 @@ namespace Com.MyCompany.MyGame
         #region Private Fields
 
         private Animator _animator = null;
+        
+        private Vector2 _direction = Vector2.zero;
 
         #endregion
         
@@ -32,12 +34,6 @@ namespace Com.MyCompany.MyGame
         // Update is called once per frame
         private void Update()
         {
-            if (!_animator)
-                return;
-            
-            if (photonView.IsMine == false && PhotonNetwork.IsConnected)
-                return;
-            
             // // deal with Jumping
             // var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
             // // only allow jumping if we are running.
@@ -60,6 +56,32 @@ namespace Com.MyCompany.MyGame
             // _animator.SetFloat("Speed", h * h + v * v);
             //
             // _animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private bool CanProcessAnimation()
+        {
+            if (!_animator) return false;
+
+            if (photonView.IsMine == false && PhotonNetwork.IsConnected) return false;
+
+            return true;
+        }
+
+        #endregion
+        
+        #region Public Methods
+
+        public void ProcessDirection(Vector2 direction)
+        {
+            if (CanProcessAnimation())
+            {
+                _animator.SetFloat("directionX", direction.x, .1F, Time.deltaTime);
+                _animator.SetFloat("directionY", direction.y,.1F, Time.deltaTime);
+            }
         }
 
         #endregion
