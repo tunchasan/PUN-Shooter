@@ -152,14 +152,8 @@ namespace Com.MyCompany.MyGame
                 OnFireAction(false);
             }
 
-            // OnPlayerMoves
-            if (IsMoving())
-            {
-                ValidateMovement();
-            }
-
             // OnPlayerIdle
-            else
+            if (!IsMoving())
             {
                 _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
             }
@@ -179,6 +173,8 @@ namespace Com.MyCompany.MyGame
             // OnPlayerJumps
             if(Input.GetKey(KeyCode.Space))
                 _cameraController.ProcessState(Enums.PlayerStates.OnJump);
+            
+            ValidateMovement();
         }
 
         /// <summary>
@@ -262,15 +258,13 @@ namespace Com.MyCompany.MyGame
             
             _animationController.ProcessDirection(new Vector2(directionX, directionZ));
             
-            if (direction.magnitude > .1F)
-            {
-                var moveVelocity = direction * speed;
-                _characterController.Move(moveVelocity * Time.deltaTime);
+            var moveVelocity = direction * speed;
 
-                // TODO
+            _characterController.Move(moveVelocity * Time.deltaTime);
 
-                // Accelerated Motion
-            }
+            // TODO
+
+            // Accelerated Motion
         }
 
         private void ProcessRotation(Vector3 rotationDirection)
