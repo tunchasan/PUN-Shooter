@@ -251,13 +251,14 @@ namespace Com.MyCompany.MyGame
         private void ProcessMovement()
         {
             // Handle Player Movement
-            var moveHorizontalAxis = Input.GetAxis("Horizontal") * transform.right;
-            var moveVerticalAxis = Input.GetAxis("Vertical") * transform.forward;
+            var inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            var moveHorizontalAxis = inputDirection.x * transform.right;
+            var moveVerticalAxis = inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
             var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
             
-            _animationController.ProcessDirection(new Vector2(directionX, directionZ));
+            _animationController.ProcessDirection(inputDirection);
             
             var moveVelocity = direction * speed;
 
