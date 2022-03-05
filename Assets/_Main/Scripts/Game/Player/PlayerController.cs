@@ -83,6 +83,8 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void Update()
         {
+            _inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
             if (photonView.IsMine)
             {
                 ProcessInputs();
@@ -115,11 +117,13 @@ namespace Com.MyCompany.MyGame
             {
                 stream.SendNext(_isFiring);
                 stream.SendNext(_health);
+                stream.SendNext(_inputDirection);
             }
             else
             {
                 _isFiring = (bool) stream.ReceiveNext();
                 _health = (float) stream.ReceiveNext();
+                _inputDirection = (Vector2) stream.ReceiveNext();
             }
         }
 
@@ -227,6 +231,8 @@ namespace Com.MyCompany.MyGame
         [SerializeField] private float speed = 10F;
         
         private Vector2 _lastMousePosition = Vector2.zero;
+        
+        private Vector2 _inputDirection = Vector2.zero;
 
         private void InitializeMovementSystem()
         {
@@ -240,28 +246,31 @@ namespace Com.MyCompany.MyGame
             var normalizedDelta = delta.normalized;
             var rotationDirection = new Vector3(normalizedDelta.x, 0F, 0F);
             _lastMousePosition = currentMousePosition;
-            
-            // Handle Camera Locomotion for "Run" state
-            _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+
             _cameraController.ValidateCameraRotation(normalizedDelta.y, verticalRotationSpeed);
             
             ProcessRotation(rotationDirection);
 
             ProcessMovement();
+            
+            if (IsMoving())
+            {
+                // Handle Camera Locomotion for "Run" state
+                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            }
         }
 
         private void ProcessMovement()
         {
             // Handle Player Movement
-            var inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            var moveHorizontalAxis = inputDirection.x * transform.right;
-            var moveVerticalAxis = inputDirection.y * transform.forward;
+            var moveHorizontalAxis = _inputDirection.x * transform.right;
+            var moveVerticalAxis = _inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
             var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
-            var moveVelocity = direction * (DetermineMovementSpeed(inputDirection) * Time.deltaTime);
+            var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
             
-            _animationController.ProcessDirection(inputDirection);
+            _animationController.ProcessDirection(_inputDirection);
             _characterController.Move(moveVelocity);
         }
 
