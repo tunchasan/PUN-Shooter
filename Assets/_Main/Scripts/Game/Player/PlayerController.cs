@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 namespace Com.MyCompany.MyGame
 {
@@ -63,6 +62,9 @@ namespace Com.MyCompany.MyGame
 
         private void Start()
         {
+            // Hide Cursor
+            Cursor.visible = false;
+            
             // Validate Camera Visibility
             _cameraController.ValidateStatus(photonView.IsMine);
             
@@ -257,16 +259,23 @@ namespace Com.MyCompany.MyGame
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
             var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
+            var moveVelocity = direction * (DetermineMovementSpeed(inputDirection) * Time.deltaTime);
             
             _animationController.ProcessDirection(inputDirection);
+            _characterController.Move(moveVelocity);
+        }
+
+        private float DetermineMovementSpeed(Vector2 inputDirection)
+        {
+            // Detect Strafe Movement
+            if (Mathf.Abs(inputDirection.x) > 0F)
+                return speed * .6F;
             
-            var moveVelocity = direction * speed;
-
-            _characterController.Move(moveVelocity * Time.deltaTime);
-
-            // TODO
-
-            // Accelerated Motion
+            // Detect Backward Movement
+            if (inputDirection.y < 0F)
+                return speed * .75F;
+            
+            return speed;
         }
 
         private void ProcessRotation(Vector3 rotationDirection)
