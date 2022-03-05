@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UIElements;
@@ -269,14 +270,17 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessRotation(Vector3 rotationDirection)
         {
-            // Handle Player Rotation
-            var currentRotation = transform.eulerAngles;
-            var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
-            targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
-            targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
-            var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
-            var calculatedAlpha = Time.deltaTime * horizontalRotationSpeed;
-            transform.eulerAngles = Vector3.Lerp(currentRotation, calculatedTargetRotation, calculatedAlpha);
+            if (rotationDirection.magnitude > float.Epsilon)
+            {
+                // Handle Player Rotation
+                var currentRotation = transform.eulerAngles;
+                var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
+                targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
+                targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
+                var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
+                var calculatedAlpha = Time.deltaTime * horizontalRotationSpeed;
+                transform.eulerAngles = Vector3.Lerp(currentRotation, calculatedTargetRotation, calculatedAlpha);
+            }
         }
 
         #endregion
