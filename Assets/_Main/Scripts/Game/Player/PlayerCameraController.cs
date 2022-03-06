@@ -10,8 +10,8 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Serialized Fields
 
-        [Tooltip("Stores camera vertical rotation limits")]
-        [SerializeField] private Vector2 cameraVerticalRotLimits = new Vector2(10F, 17.5F);
+        [Tooltip("Stores camera vertical rotation limits")] 
+        [SerializeField] private float cameraRotationLimit = 25F;
 
         [Tooltip("The Player's TPS Camera")]
         [SerializeField] private CinemachineVirtualCamera playerCamera = null;
@@ -92,16 +92,32 @@ namespace Com.MyCompany.MyGame
             playerCamera.gameObject.SetActive(status);
         }
 
+        private Vector3 _cameraVelocity = Vector3.zero;
+        
         public void ValidateCameraRotation(float upWeight, float rotationSpeed)
         {
+            // Handle Camera Rotations
+            var smoothTime = 5F / rotationSpeed;
             var target = playerCamera.transform;
             var currentRotation = target.localEulerAngles;
             var additiveRotationX = -upWeight * rotationSpeed;
             var targetRotationAngle = currentRotation.x + additiveRotationX;
             targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
             targetRotationAngle = Mathf.Clamp(targetRotationAngle, 
-                cameraVerticalRotLimits.x, cameraVerticalRotLimits.y);
-            target.localEulerAngles = new Vector3(targetRotationAngle, currentRotation.y, currentRotation.z);
+                -cameraRotationLimit, cameraRotationLimit);
+            var targetRotation = new Vector3(targetRotationAngle, currentRotation.y, currentRotation.z);
+            target.localEulerAngles = targetRotation;
+
+            // Handle Camera Positions
+            var alpha = targetRotationAngle / cameraRotationLimit;
+            var defaultPosition = DetermineCameraPreset(Enums.PlayerStates.OnIdle).position;
+            var currentPosition = target.localPosition;
+            var targetOffset = alpha < 0F
+                ? new Vector3(currentPosition.x, 1.5F, -2.5F)
+                : new Vector3(currentPosition.x, 3.5F, -2.5F);
+            var targetPosition = 
+                Vector3.Lerp(defaultPosition, targetOffset, Mathf.Abs(alpha));
+            target.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref _cameraVelocity, smoothTime);
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)

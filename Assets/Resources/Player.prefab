@@ -375,7 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4db5d3047c84f1a4bbdffe3cfae32551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraVerticalRotLimits: {x: -25, y: 25}
+  cameraRotationLimit: 25
   playerCamera: {fileID: 3360273444250681879}
 --- !u!1001 &3360273444099158814
 PrefabInstance:

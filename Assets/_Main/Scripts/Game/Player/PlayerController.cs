@@ -137,39 +137,27 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
-            // OnPlayerFires
-            if (Input.GetButtonDown("Fire1"))
-            {
-                OnFireAction(true);
-            }
-            
-            // OnPlayerNotFires
-            else if (Input.GetButtonUp("Fire1"))
-            {
-                OnFireAction(false);
-            }
-
-            // OnPlayerIdle
-            if (!IsMoving())
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerAims
-            if (Input.GetButton("Fire2"))
-            {
-                OnAimAction(Input.mousePosition);
-            }
-            
-            // OnPlayerNotAims
-            else if (Input.GetButtonUp("Fire2"))
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerJumps
-            if(Input.GetKey(KeyCode.Space))
-                _cameraController.ProcessState(Enums.PlayerStates.OnJump);
+            // // OnPlayerFires
+            // if (Input.GetButtonDown("Fire1"))
+            // {
+            //     OnFireAction(true);
+            // }
+            //
+            // // OnPlayerNotFires
+            // else if (Input.GetButtonUp("Fire1"))
+            // {
+            //     OnFireAction(false);
+            // }
+            //
+            // // OnPlayerAims
+            // if (Input.GetButton("Fire2"))
+            // {
+            //     OnAimAction(Input.mousePosition);
+            // }
+            //
+            // // OnPlayerJumps
+            // if(Input.GetKey(KeyCode.Space))
+            //     _cameraController.ProcessState(Enums.PlayerStates.OnJump);
             
             ValidateLocomotion();
         }
