@@ -94,12 +94,14 @@ namespace Com.MyCompany.MyGame
 
         public void ValidateCameraRotation(float upWeight, float rotationSpeed)
         {
-            var cameraXRotationLimit = upWeight > 0 ? cameraVerticalRotLimits.x : cameraVerticalRotLimits.y;
-            var currentRotation = playerCamera.transform.localEulerAngles;
-            var calculatedAlpha = Math.Abs(upWeight) * Time.deltaTime * rotationSpeed;
-            var calculatedXRotation = Mathf.Lerp(currentRotation.x, cameraXRotationLimit, calculatedAlpha);
-            var targetRotation = new Vector3(calculatedXRotation, currentRotation.y, currentRotation.z);
-            playerCamera.transform.localEulerAngles = targetRotation;
+            var target = playerCamera.transform;
+            var currentRotation = target.localEulerAngles;
+            var additiveRotationX = -upWeight * rotationSpeed;
+            var targetRotationAngle = currentRotation.x + additiveRotationX;
+            targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
+            targetRotationAngle = Mathf.Clamp(targetRotationAngle, 
+                cameraVerticalRotLimits.x, cameraVerticalRotLimits.y);
+            target.localEulerAngles = new Vector3(targetRotationAngle, currentRotation.y, currentRotation.z);
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)

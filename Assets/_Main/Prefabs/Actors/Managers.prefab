@@ -63,25 +63,25 @@ MonoBehaviour:
     fieldOfView: 50
     animDuration: 0.75
     animType: 6
-    position: {x: 0, y: 2.5, z: -4.5}
+    position: {x: 0.5, y: 2.5, z: -3.5}
   - title: Preset Run
     state: 3
-    fieldOfView: 55
+    fieldOfView: 65
     animDuration: 0.5
     animType: 5
-    position: {x: 0, y: 2.5, z: -4.5}
+    position: {x: 0.5, y: 2.5, z: -3.5}
   - title: Preset Jump
     state: 2
     fieldOfView: 55
     animDuration: 0.5
     animType: 18
-    position: {x: 0, y: 3, z: -4.5}
+    position: {x: 0.5, y: 3, z: -3.5}
   - title: Preset Aim
     state: 4
     fieldOfView: 40
     animDuration: 0.6
     animType: 18
-    position: {x: 0.5, y: 2.5, z: -4}
+    position: {x: 0.75, y: 2.5, z: -2.5}
   - title: Preset Death
     state: 6
     fieldOfView: 0

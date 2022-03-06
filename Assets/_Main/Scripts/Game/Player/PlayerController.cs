@@ -1,6 +1,5 @@
 using UnityEngine;
 using Photon.Pun;
-using Cursor = UnityEngine.Cursor;
 
 namespace Com.MyCompany.MyGame
 {
@@ -62,9 +61,6 @@ namespace Com.MyCompany.MyGame
 
         private void Start()
         {
-            // Hide Cursor
-            Cursor.visible = false;
-            
             // Validate Camera Visibility
             _cameraController.ValidateStatus(photonView.IsMine);
             
@@ -74,8 +70,6 @@ namespace Com.MyCompany.MyGame
 
             // Instantiate PlayerUI and Assign
             // InitializePlayerUI();
-
-            InitializeMovementSystem();
         }
 
         /// <summary>
@@ -83,12 +77,8 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void Update()
         {
-            _inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
             if (photonView.IsMine)
-            {
                 ProcessInputs();
-            }
         }
 
         public override void OnEnable()
@@ -181,7 +171,7 @@ namespace Com.MyCompany.MyGame
             if(Input.GetKey(KeyCode.Space))
                 _cameraController.ProcessState(Enums.PlayerStates.OnJump);
             
-            ValidateMovement();
+            ValidateLocomotion();
         }
 
         /// <summary>
@@ -230,39 +220,19 @@ namespace Com.MyCompany.MyGame
         
         [SerializeField] private float speed = 10F;
         
-        private Vector2 _lastMousePosition = Vector2.zero;
-        
         private Vector2 _inputDirection = Vector2.zero;
 
-        private void InitializeMovementSystem()
+        private void ValidateLocomotion()
         {
-            _lastMousePosition = new Vector2(Screen.width / 2F, Screen.height / 2F);
-        }
-
-        private void ValidateMovement()
-        {
-            var currentMousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            var delta = currentMousePosition - _lastMousePosition;
-            var normalizedDelta = delta.normalized;
-            var rotationDirection = new Vector3(normalizedDelta.x, 0F, 0F);
-            _lastMousePosition = currentMousePosition;
-
-            _cameraController.ValidateCameraRotation(normalizedDelta.y, verticalRotationSpeed);
-            
-            ProcessRotation(rotationDirection);
-
             ProcessMovement();
             
-            if (IsMoving())
-            {
-                // Handle Camera Locomotion for "Run" state
-                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
-            }
+            ProcessRotation();
         }
 
         private void ProcessMovement()
         {
             // Handle Player Movement
+            _inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             var moveHorizontalAxis = _inputDirection.x * transform.right;
             var moveVerticalAxis = _inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
@@ -272,6 +242,12 @@ namespace Com.MyCompany.MyGame
             
             _animationController.ProcessDirection(_inputDirection);
             _characterController.Move(moveVelocity);
+            
+            if (IsMoving())
+            {
+                // Handle Camera Locomotion for "Run" state
+                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
+            }
         }
 
         private float DetermineMovementSpeed(Vector2 inputDirection)
@@ -287,18 +263,25 @@ namespace Com.MyCompany.MyGame
             return speed;
         }
 
-        private void ProcessRotation(Vector3 rotationDirection)
+        private void ProcessRotation()
         {
+            var horizontalInput = Input.GetAxis("Mouse X");
+            var verticalInput = Input.GetAxis("Mouse Y");
+            var rotationSpeedMultiplier = Mathf.Abs(horizontalInput);
+            var rotationDirection = new Vector3(horizontalInput, 0F, 0F);
+
+            _cameraController.ValidateCameraRotation(verticalInput, verticalRotationSpeed);
+            
             if (rotationDirection.magnitude > float.Epsilon)
             {
                 // Handle Player Rotation
                 var currentRotation = transform.eulerAngles;
                 var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
                 targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
-                targetRotationAngle = Mathf.Clamp(targetRotationAngle, -45F, 45F);
                 var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
-                var calculatedAlpha = Time.deltaTime * horizontalRotationSpeed;
-                transform.eulerAngles = Vector3.Lerp(currentRotation, calculatedTargetRotation, calculatedAlpha);
+                transform.eulerAngles =
+                    Vector3.Lerp(currentRotation, calculatedTargetRotation, 
+                        Time.deltaTime * rotationSpeedMultiplier * horizontalRotationSpeed);
             }
         }
 
