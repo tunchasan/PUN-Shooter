@@ -215,6 +215,8 @@ namespace Com.MyCompany.MyGame
             ProcessMovement();
             
             ProcessRotation();
+
+            ProcessAim();
         }
 
         private void ProcessMovement()
@@ -271,6 +273,29 @@ namespace Com.MyCompany.MyGame
                     Vector3.Lerp(currentRotation, calculatedTargetRotation, 
                         Time.deltaTime * rotationSpeedMultiplier * horizontalRotationSpeed);
             }
+        }
+
+        #endregion
+
+        #region AimSystem
+
+        [Header("@AimSystem")] 
+        [SerializeField] private Transform aimTarget = null;
+        [SerializeField] private Vector2 aimLimits = Vector2.zero;
+        [SerializeField] private float aimSpeed = 5F;
+
+        private float _aimAlpha = 0F;
+
+        private void ProcessAim()
+        {
+            var verticalInput = Input.GetAxis("Mouse Y");
+            _aimAlpha += verticalInput * Time.deltaTime * aimSpeed;
+            _aimAlpha = Mathf.Clamp(_aimAlpha, 0F, 1F);
+
+            var currentPos = aimTarget.localPosition;
+            var targetPos1 = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x) ,Vector3.zero, _aimAlpha);
+            var targetPos2 = Vector3.Lerp(targetPos1 ,new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
+            aimTarget.localPosition = Vector3.Lerp(currentPos, targetPos2, _aimAlpha);
         }
 
         #endregion
