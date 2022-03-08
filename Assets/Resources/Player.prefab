@@ -330,7 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerUiPrefab: {fileID: 7666821509130482488, guid: d4d4979f37ca42e4d8c9ac0671b49bd4, type: 3}
   horizontalRotationSpeed: 5
-  verticalRotationSpeed: 10
+  verticalRotationSpeed: 20
   speed: 4
 --- !u!143 &9045475443259528852
 CharacterController:
@@ -375,7 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4db5d3047c84f1a4bbdffe3cfae32551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraRotationLimit: 25
+  cameraRotationLimit: 30
   playerCamera: {fileID: 3360273444250681879}
 --- !u!1001 &3360273444099158814
 PrefabInstance:
