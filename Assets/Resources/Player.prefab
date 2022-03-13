@@ -152,10 +152,10 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 50
+    FieldOfView: 55
     OrthographicSize: 5
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 1000
     Dutch: 0
     LensShift: {x: 0, y: 0}
   m_Transitions:
@@ -442,7 +442,7 @@ MonoBehaviour:
   - {fileID: 972563947349554393}
   - {fileID: 5114440666141425165}
   - {fileID: 8499042055283536335}
-  sceneViewId: 1
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &972563947349554393
@@ -490,7 +490,7 @@ MonoBehaviour:
   verticalRotationSpeed: 20
   speed: 4
   aimTarget: {fileID: 2832179698120429847}
-  aimLimits: {x: -1.5, y: 0.75}
+  aimLimits: {x: -1, y: 0.5}
   aimSpeed: 5
 --- !u!143 &9045475443259528852
 CharacterController:

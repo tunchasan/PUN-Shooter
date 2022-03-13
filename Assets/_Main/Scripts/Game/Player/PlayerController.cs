@@ -213,12 +213,14 @@ namespace Com.MyCompany.MyGame
             var moveVerticalAxis = _inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
-            var fallSpeed = Physics.gravity.y / (2F * speed);
+            var fallSpeed = Physics.gravity.y / (2.5F * speed);
             var direction = new Vector3(directionX, fallSpeed, directionZ);
             var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
             
-            _animationController.ProcessDirection(_inputDirection);
             _characterController.Move(moveVelocity);
+
+            var currentVelocity = _characterController.velocity.magnitude;
+            _animationController.ProcessDirection(currentVelocity > .15F ? _inputDirection : Vector2.zero);
         }
 
         private float DetermineMovementSpeed(Vector2 inputDirection)
@@ -265,7 +267,7 @@ namespace Com.MyCompany.MyGame
         [SerializeField] private Vector2 aimLimits = Vector2.zero;
         [SerializeField] private float aimSpeed = 5F;
 
-        private float _aimAlpha = 0F;
+        private float _aimAlpha = 0.5F;
 
         private void ProcessAim()
         {
@@ -273,10 +275,7 @@ namespace Com.MyCompany.MyGame
             _aimAlpha += verticalInput * Time.deltaTime * aimSpeed;
             _aimAlpha = Mathf.Clamp(_aimAlpha, 0F, 1F);
 
-            var currentPos = aimTarget.localPosition;
-            var targetPos1 = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x) ,Vector3.zero, _aimAlpha);
-            var targetPos2 = Vector3.Lerp(targetPos1 ,new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
-            aimTarget.localPosition = Vector3.Lerp(currentPos, targetPos2, _aimAlpha);
+            aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
         }
 
         #endregion
