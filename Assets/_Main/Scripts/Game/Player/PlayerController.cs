@@ -232,12 +232,6 @@ namespace Com.MyCompany.MyGame
             
             _animationController.ProcessDirection(_inputDirection);
             _characterController.Move(moveVelocity);
-            
-            if (IsMoving())
-            {
-                // Handle Camera Locomotion for "Run" state
-                _cameraController.ProcessState(Enums.PlayerStates.OnRun);
-            }
         }
 
         private float DetermineMovementSpeed(Vector2 inputDirection)
@@ -252,7 +246,7 @@ namespace Com.MyCompany.MyGame
             
             return speed;
         }
-
+ 
         private void ProcessRotation()
         {
             var horizontalInput = Input.GetAxis("Mouse X");
