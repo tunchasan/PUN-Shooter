@@ -1,6 +1,8 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
@@ -264,6 +266,7 @@ namespace Com.MyCompany.MyGame
 
         [Header("@AimSystem")] 
         [SerializeField] private Transform aimTarget = null;
+        [SerializeField] private Image aimSprite = null;
         [SerializeField] private Vector2 aimLimits = Vector2.zero;
         [SerializeField] private float aimSpeed = 5F;
 
@@ -275,7 +278,18 @@ namespace Com.MyCompany.MyGame
             _aimAlpha += verticalInput * Time.deltaTime * aimSpeed;
             _aimAlpha = Mathf.Clamp(_aimAlpha, 0F, 1F);
 
-            aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
+            aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
+                new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
+
+            var aimTargetColor = Color.white;
+            aimTargetColor.a = .25F;
+            aimSprite.color = Color.Lerp(Color.white, aimTargetColor, _aimAlpha);
+
+            var aimLerp1 = Vector2.Lerp(new Vector2(0, -35), new Vector2(0, -200), _aimAlpha);
+            var aimLerp2 = Vector2.Lerp(aimLerp1, new Vector2(0, 35), _aimAlpha);
+            aimSprite.rectTransform.anchoredPosition = aimLerp2;
+            aimSprite.transform.localScale = Vector3.Lerp(Vector3.one * .4F, Vector3.one, 
+                _aimAlpha);
         }
 
         #endregion

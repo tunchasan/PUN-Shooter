@@ -15,9 +15,9 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0, g: 0.8070264, b: 1, a: 1}
-  m_FogMode: 3
-  m_FogDensity: 0.025
+  m_FogColor: {r: 0.37647057, g: 0.6515767, b: 1, a: 1}
+  m_FogMode: 2
+  m_FogDensity: 0.01
   m_LinearFogStart: 74.41
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -262,7 +262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4505347873416807595, guid: 505ef4b8d21ad5040a4083f22297e873, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4505347873416807595, guid: 505ef4b8d21ad5040a4083f22297e873, type: 3}
       propertyPath: m_LocalPosition.z
@@ -309,53 +309,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1629643218, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: field of view
-      value: 55
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643218, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: far clip plane
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.9990483
-      objectReference: {fileID: 0}
-    - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.043619405
-      objectReference: {fileID: 0}
-    - target: {fileID: 1728686870434275325, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_Color.b
-      value: 0.9259549
-      objectReference: {fileID: 0}
-    - target: {fileID: 1728686870434275325, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_Color.g
-      value: 0.9198113
-      objectReference: {fileID: 0}
-    - target: {fileID: 1728686870434275325, guid: e514c1b8399513142be865c0c49ad165, type: 3}
-      propertyPath: m_Color.r
-      value: 1
+      value: 3.05
       objectReference: {fileID: 0}
     - target: {fileID: 1728686871233023640, guid: e514c1b8399513142be865c0c49ad165, type: 3}
       propertyPath: m_RootOrder
