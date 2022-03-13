@@ -19,43 +19,25 @@ namespace Com.MyCompany.MyGame
         private Vector2 _direction = Vector2.zero;
 
         #endregion
+
+        #region Const Fields
+
+        private const string DirectionX = "directionX";
+        private const string DirectionY = "directionY";
+        private const string IsFalling = "isFalling";
+        private const string IsGrounded = "isGrounded";
+
+        #endregion
         
         #region MonoBehaviour Callbacks
 
         // Use this for initialization
-        private void Start()
+        private void Awake()
         {
             _animator = GetComponentInChildren<Animator>();
             
             if (!_animator)
                 Debug.LogError("PlayerAnimatorManager is Missing Animator Component", this);
-        }
-
-        // Update is called once per frame
-        private void Update()
-        {
-            // // deal with Jumping
-            // var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-            // // only allow jumping if we are running.
-            // if (stateInfo.IsName("Base Layer.Run"))
-            // {
-            //     // When using trigger parameter
-            //     if (Input.GetKey(KeyCode.Space))
-            //     {
-            //         
-            //         
-            //         _animator.SetTrigger("Jump");
-            //     }
-            // }
-            //
-            // var h = Input.GetAxis("Horizontal");
-            // var v = Input.GetAxis("Vertical");
-            //
-            // v = v < 0 ? 0 : v;
-            //
-            // _animator.SetFloat("Speed", h * h + v * v);
-            //
-            // _animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
         }
 
         #endregion
@@ -79,9 +61,19 @@ namespace Com.MyCompany.MyGame
         {
             if (CanProcessAnimation())
             {
-                _animator.SetFloat("directionX", direction.x, .1F, Time.deltaTime);
-                _animator.SetFloat("directionY", direction.y,.1F, Time.deltaTime);
+                _animator.SetFloat(DirectionX, direction.x, .1F, Time.deltaTime);
+                _animator.SetFloat(DirectionY, direction.y,.1F, Time.deltaTime);
             }
+        }
+
+        public void PlayFallingAnimation()
+        {
+            _animator.SetTrigger(IsFalling);
+        }
+
+        public void PlayGroundedAnimation()
+        {
+            _animator.SetTrigger(IsGrounded);
         }
 
         #endregion

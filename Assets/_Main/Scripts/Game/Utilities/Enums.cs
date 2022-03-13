@@ -12,7 +12,9 @@ namespace Com.MyCompany.MyGame
             OnRun,
             OnAim,
             OnShoot,
-            OnDeath
+            OnDeath,
+            OnFalling,
+            OnGrounded
         }
-    } 
+    }
 }

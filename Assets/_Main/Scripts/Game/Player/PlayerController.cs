@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Photon.Pun;
 
@@ -26,11 +27,10 @@ namespace Com.MyCompany.MyGame
         private PlayerCameraController _cameraController = null;
         
         private PlayerAnimationController _animationController = null;
-        
-        // "The current Health of our player"
-        private float _health = 100F;
 
         private CharacterController _characterController = null;
+
+        private PlayerBase _player = null;
 
         #endregion
 
@@ -53,6 +53,8 @@ namespace Com.MyCompany.MyGame
             _characterController = GetComponent<CharacterController>();
 
             _animationController = GetComponent<PlayerAnimationController>();
+
+            _player = GetComponent<PlayerBase>();
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -106,13 +108,11 @@ namespace Com.MyCompany.MyGame
             if (stream.IsWriting)
             {
                 stream.SendNext(_isFiring);
-                stream.SendNext(_health);
                 stream.SendNext(_inputDirection);
             }
             else
             {
                 _isFiring = (bool) stream.ReceiveNext();
-                _health = (float) stream.ReceiveNext();
                 _inputDirection = (Vector2) stream.ReceiveNext();
             }
         }
@@ -137,28 +137,6 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
-            // // OnPlayerFires
-            // if (Input.GetButtonDown("Fire1"))
-            // {
-            //     OnFireAction(true);
-            // }
-            //
-            // // OnPlayerNotFires
-            // else if (Input.GetButtonUp("Fire1"))
-            // {
-            //     OnFireAction(false);
-            // }
-            //
-            // // OnPlayerAims
-            // if (Input.GetButton("Fire2"))
-            // {
-            //     OnAimAction(Input.mousePosition);
-            // }
-            //
-            // // OnPlayerJumps
-            // if(Input.GetKey(KeyCode.Space))
-            //     _cameraController.ProcessState(Enums.PlayerStates.OnJump);
-            
             ValidateLocomotion();
         }
 
@@ -210,13 +188,21 @@ namespace Com.MyCompany.MyGame
         
         private Vector2 _inputDirection = Vector2.zero;
 
+        private bool CanProcessLocomotion()
+        {
+            return true;
+        }
+        
         private void ValidateLocomotion()
         {
-            ProcessMovement();
+            if (CanProcessLocomotion())
+            {
+                ProcessMovement();
             
-            ProcessRotation();
+                ProcessRotation();
 
-            ProcessAim();
+                ProcessAim();
+            }
         }
 
         private void ProcessMovement()
@@ -227,7 +213,8 @@ namespace Com.MyCompany.MyGame
             var moveVerticalAxis = _inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
-            var direction = new Vector3(directionX, Physics.gravity.y, directionZ);
+            var fallSpeed = Physics.gravity.y / (2F * speed);
+            var direction = new Vector3(directionX, fallSpeed, directionZ);
             var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
             
             _animationController.ProcessDirection(_inputDirection);
@@ -268,7 +255,7 @@ namespace Com.MyCompany.MyGame
                         Time.deltaTime * rotationSpeedMultiplier * horizontalRotationSpeed);
             }
         }
-
+        
         #endregion
 
         #region AimSystem
