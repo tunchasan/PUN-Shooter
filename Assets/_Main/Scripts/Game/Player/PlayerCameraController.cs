@@ -92,31 +92,21 @@ namespace Com.MyCompany.MyGame
             playerCamera.gameObject.SetActive(status);
         }
 
-        public void ValidateCameraRotation(float upWeight, float rotationSpeed)
+        public void ValidateCameraRotation(float aimAlpha)
         {
             // Handle Camera Rotations
             var target = playerCamera.transform;
-            var currentRotation = target.localEulerAngles;
-            var additiveRotationX = -upWeight * rotationSpeed;
-            var targetRotationAngle = currentRotation.x + additiveRotationX;
-            targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
-            targetRotationAngle = Mathf.Clamp(targetRotationAngle, 
-                -cameraRotationLimit, cameraRotationLimit);
-            var targetRotation = new Vector3(targetRotationAngle, currentRotation.y, currentRotation.z);
-            target.localRotation = Quaternion.Lerp(Quaternion.Euler(currentRotation), Quaternion.Euler(targetRotation), 
-                Time.deltaTime * rotationSpeed);
+            var rotationA = new Vector3(55F, 0F, 0F);
+            var rotationB = new Vector3(-70F, 0F, 0F);
+            target.localRotation = Quaternion.Lerp(Quaternion.Euler(rotationA), Quaternion.Euler(rotationB), aimAlpha);
             
             // Handle Camera Positions
-            var alpha = targetRotationAngle / cameraRotationLimit;
-            var defaultPosition = DetermineCameraPreset(Enums.PlayerStates.OnIdle).position;
             var currentPosition = target.localPosition;
-            var targetOffset = alpha < 0F
-                ? new Vector3(currentPosition.x, 1F, -2.5F)
-                : new Vector3(currentPosition.x, 3.5F, -2.5F);
-            var targetPosition = 
-                Vector3.Lerp(defaultPosition, targetOffset, Mathf.Abs(alpha));
-            target.localPosition = Vector3.Lerp(currentPosition, targetPosition, 
-                Time.deltaTime * rotationSpeed);
+            var pointA = new Vector3(currentPosition.x, 3.5F, -.6F);
+            var pointB = CameraPresetContainer.Instance.Find(Enums.PlayerStates.OnIdle).position;
+            var pointC = new Vector3(currentPosition.x, .6F, -1.25F);
+            var lerp1 = Vector3.Lerp(pointA, pointB, aimAlpha);
+            target.localPosition = Vector3.Lerp(lerp1, pointC, aimAlpha);
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)

@@ -760,7 +760,7 @@ MonoBehaviour:
   - {fileID: 972563947349554393}
   - {fileID: 5114440666141425165}
   - {fileID: 8499042055283536335}
-  sceneViewId: 1
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &972563947349554393
@@ -809,7 +809,7 @@ MonoBehaviour:
   speed: 4
   aimTarget: {fileID: 2832179698120429847}
   aimSprite: {fileID: 7452605751559276211}
-  aimLimits: {x: -1, y: 0.5}
+  aimLimits: {x: -1.25, y: 0.75}
   aimSpeed: 5
 --- !u!143 &9045475443259528852
 CharacterController:
@@ -854,7 +854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4db5d3047c84f1a4bbdffe3cfae32551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraRotationLimit: 30
+  cameraRotationLimit: 70
   playerCamera: {fileID: 3360273444250681879}
 --- !u!114 &7441891869579921637
 MonoBehaviour:

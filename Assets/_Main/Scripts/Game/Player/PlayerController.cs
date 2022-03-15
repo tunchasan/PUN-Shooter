@@ -241,11 +241,8 @@ namespace Com.MyCompany.MyGame
         private void ProcessRotation()
         {
             var horizontalInput = Input.GetAxis("Mouse X");
-            var verticalInput = Input.GetAxis("Mouse Y");
             var rotationSpeedMultiplier = Mathf.Abs(horizontalInput);
             var rotationDirection = new Vector3(horizontalInput, 0F, 0F);
-
-            _cameraController.ValidateCameraRotation(verticalInput, verticalRotationSpeed);
             
             if (rotationDirection.magnitude > float.Epsilon)
             {
@@ -280,6 +277,8 @@ namespace Com.MyCompany.MyGame
 
             aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
                 new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
+
+            _cameraController.ValidateCameraRotation(_aimAlpha);
 
             var aimTargetColor = Color.white;
             aimTargetColor.a = .25F;
