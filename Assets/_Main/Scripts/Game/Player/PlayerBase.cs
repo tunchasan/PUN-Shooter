@@ -24,9 +24,4 @@ public class PlayerBase : MonoBehaviour
 
         return false;
     }
-    
-    private void Start()
-    {
-        UpdateState(Enums.PlayerStates.OnIdle);
-    }
 }

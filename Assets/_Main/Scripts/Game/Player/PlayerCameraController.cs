@@ -77,9 +77,9 @@ namespace Com.MyCompany.MyGame
 
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
         {
-            return state == Enums.PlayerStates.None ? 
-                _initialPreset : 
-                CameraPresetContainer.Instance.Find(state);
+            var preset = CameraPresetContainer.Instance.Find(state);
+
+            return preset ?? _initialPreset;
         }
 
         #endregion
@@ -103,7 +103,7 @@ namespace Com.MyCompany.MyGame
             // Handle Camera Positions
             var currentPosition = target.localPosition;
             var pointA = new Vector3(currentPosition.x, 3.5F, -.6F);
-            var pointB = CameraPresetContainer.Instance.Find(Enums.PlayerStates.OnIdle).position;
+            var pointB = DetermineCameraPreset(Enums.PlayerStates.OnIdle).position;
             var pointC = new Vector3(currentPosition.x, .6F, -1.25F);
             var lerp1 = Vector3.Lerp(pointA, pointB, aimAlpha);
             target.localPosition = Vector3.Lerp(lerp1, pointC, aimAlpha);
@@ -126,7 +126,12 @@ namespace Com.MyCompany.MyGame
                 case Enums.PlayerStates.OnJump:
                 case Enums.PlayerStates.OnRun:
                 case Enums.PlayerStates.OnAim:
-                    Animate(DetermineCameraPreset(state));
+                {
+                    var preset = DetermineCameraPreset(state);
+                    
+                    if(preset != null)
+                        Animate(preset);
+                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

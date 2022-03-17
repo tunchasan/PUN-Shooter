@@ -17,7 +17,10 @@ namespace Com.MyCompany.MyGame
 
         public CameraPreset Find(Enums.PlayerStates state)
         {
-            return presets.FirstOrDefault((elem) => elem.state == state);
+            var isExist = presets.Any(preset => preset.state == state);
+            
+            return isExist ? presets.
+                FirstOrDefault((elem) => elem.state == state) : null;
         }
 
         #endregion
