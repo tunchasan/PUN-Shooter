@@ -140,6 +140,11 @@ namespace Com.MyCompany.MyGame
         private void ProcessInputs()
         {
             ValidateLocomotion();
+            
+            if(Input.GetButtonDown("Run"))
+                UpdateSpeedMultiplier(true);
+            if(Input.GetButtonUp("Run"))
+                UpdateSpeedMultiplier(false);
         }
 
         /// <summary>
@@ -187,8 +192,17 @@ namespace Com.MyCompany.MyGame
         [SerializeField] private float verticalRotationSpeed = 10F;
         
         [SerializeField] private float speed = 10F;
+
+        private float _currentSpeed = 0F;
+
+        private bool _isRunning = false;
         
         private Vector2 _inputDirection = Vector2.zero;
+
+        private void UpdateSpeedMultiplier(bool status)
+        {
+            _isRunning = status;
+        }
 
         private bool CanProcessLocomotion()
         {
@@ -221,21 +235,35 @@ namespace Com.MyCompany.MyGame
             
             _characterController.Move(moveVelocity);
 
-            var currentVelocity = _characterController.velocity.magnitude;
-            _animationController.ProcessDirection(currentVelocity > .15F ? _inputDirection : Vector2.zero);
+            DetermineLocomotionData();
         }
 
         private float DetermineMovementSpeed(Vector2 inputDirection)
         {
-            // Detect Strafe Movement
-            if (Mathf.Abs(inputDirection.x) > 0F)
-                return speed * .6F;
+            var multiplyValue = _isRunning ? 1.4F : 1F;
+
+            // Detect Strafe Movement || Detect Backward Movement
+
+            if (Mathf.Abs(inputDirection.x) > 0F || inputDirection.y < 0F)
+                return AnimatedMovementSpeed(multiplyValue * .5F);
             
-            // Detect Backward Movement
-            if (inputDirection.y < 0F)
-                return speed * .75F;
+            return AnimatedMovementSpeed(multiplyValue);
+        }
+
+        private float AnimatedMovementSpeed(float multiplyValue)
+        {
+            var targetSpeed = speed * multiplyValue;
+            _currentSpeed = Mathf.Lerp(_currentSpeed, targetSpeed, Time.deltaTime * 5F);
+            return _currentSpeed;
+        }
+        
+        private void DetermineLocomotionData()
+        {
+            var currentVelocity = _characterController.velocity.magnitude;
+
+            var direction = currentVelocity > .15F ? _inputDirection : Vector2.zero;
             
-            return speed;
+            _animationController.ProcessLocomotion(direction, _isRunning);
         }
  
         private void ProcessRotation()

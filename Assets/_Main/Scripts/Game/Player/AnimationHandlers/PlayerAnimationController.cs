@@ -26,6 +26,7 @@ namespace Com.MyCompany.MyGame
         private const string DirectionY = "directionY";
         private const string IsFalling = "isFalling";
         private const string IsGrounded = "isGrounded";
+        private const string Speed = "speed";
 
         #endregion
         
@@ -57,12 +58,13 @@ namespace Com.MyCompany.MyGame
         
         #region Public Methods
 
-        public void ProcessDirection(Vector2 direction)
+        public void ProcessLocomotion(Vector2 direction, bool isRunning)
         {
             if (CanProcessAnimation())
             {
                 _animator.SetFloat(DirectionX, direction.x, .1F, Time.deltaTime);
                 _animator.SetFloat(DirectionY, direction.y,.1F, Time.deltaTime);
+                _animator.SetFloat(Speed, isRunning ? 1F : 0F, .2F, Time.deltaTime);
             }
         }
 
