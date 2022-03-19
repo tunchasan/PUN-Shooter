@@ -320,7 +320,7 @@ namespace Com.MyCompany.MyGame
 
         [Header("@AimSystem")] 
         [SerializeField] private Transform aimTarget = null;
-        [SerializeField] private Image aimSprite = null;
+        [SerializeField] private GameObject aimPanel = null;
         [SerializeField] private Vector2 aimLimits = Vector2.zero;
         [SerializeField] private float aimSpeed = 5F;
 
@@ -328,6 +328,8 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessAim()
         {
+            aimPanel.SetActive(photonView.IsMine);
+
             var verticalInput = Input.GetAxis("Mouse Y");
             _aimAlpha += verticalInput * Time.deltaTime * aimSpeed;
             _aimAlpha = Mathf.Clamp(_aimAlpha, 0F, 1F);
@@ -336,16 +338,6 @@ namespace Com.MyCompany.MyGame
                 new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
 
             _cameraController.ValidateCameraRotation(_aimAlpha);
-
-            var aimTargetColor = Color.white;
-            aimTargetColor.a = .25F;
-            aimSprite.color = Color.Lerp(Color.white, aimTargetColor, _aimAlpha);
-
-            var aimLerp1 = Vector2.Lerp(new Vector2(0, -35), new Vector2(0, -200), _aimAlpha);
-            var aimLerp2 = Vector2.Lerp(aimLerp1, new Vector2(0, 35), _aimAlpha);
-            aimSprite.rectTransform.anchoredPosition = aimLerp2;
-            aimSprite.transform.localScale = Vector3.Lerp(Vector3.one * .4F, Vector3.one, 
-                _aimAlpha);
         }
 
         #endregion

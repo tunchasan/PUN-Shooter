@@ -1,8 +1,9 @@
 using Com.MyCompany.MyGame;
+using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
-public class PlayerBase : MonoBehaviour
+public class PlayerBase : MonoBehaviour, IPunObservable
 {
     private void Awake()
     {
@@ -24,4 +25,16 @@ public class PlayerBase : MonoBehaviour
 
         return false;
     }
+
+    #region IPunObservable implementation
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+            stream.SendNext((byte)CurrentState);
+        else
+            CurrentState = (Enums.PlayerStates)((byte) stream.ReceiveNext());
+    }
+
+    #endregion
 }

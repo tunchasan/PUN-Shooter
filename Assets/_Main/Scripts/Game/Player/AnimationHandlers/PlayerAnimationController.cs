@@ -49,8 +49,6 @@ namespace Com.MyCompany.MyGame
         {
             if (!_animator) return false;
 
-            if (photonView.IsMine == false && PhotonNetwork.IsConnected) return false;
-
             return true;
         }
 

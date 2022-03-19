@@ -153,7 +153,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -35, y: -25}
-  m_SizeDelta: {x: 80, y: 80}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1242235367510477058
 CanvasRenderer:
@@ -177,15 +177,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: de5d979af98c5f64b850eae930cd8944, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 462f668596f46004e8916d6ce127d7a5, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -658,11 +658,14 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: directionY
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: isFalling
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: isGrounded
+  - Type: 1
+    SynchronizeType: 1
+    Name: speed
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -809,7 +812,7 @@ MonoBehaviour:
   jumpSpeed: 2
   jumpDuration: 0.2
   aimTarget: {fileID: 2832179698120429847}
-  aimSprite: {fileID: 7452605751559276211}
+  aimPanel: {fileID: 6549313577447024518}
   aimLimits: {x: -1.25, y: 0.75}
   aimSpeed: 5
 --- !u!143 &9045475443259528852
