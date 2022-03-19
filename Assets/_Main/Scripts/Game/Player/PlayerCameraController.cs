@@ -10,9 +10,12 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Serialized Fields
 
-        [Tooltip("The Player's TPS Camera")]
-        [SerializeField] private CinemachineFreeLook playerCamera = null;
+        [Tooltip("Stores camera vertical rotation limits")] 
+        [SerializeField] private float cameraRotationLimit = 25F;
 
+        [Tooltip("The Player's TPS Camera")]
+        [SerializeField] private CinemachineVirtualCamera playerCamera = null;
+        
         #endregion
 
         #region Private Fields
@@ -21,7 +24,7 @@ namespace Com.MyCompany.MyGame
         private CameraPreset _initialPreset = new CameraPreset();
 
         [Tooltip("Stores playerCamera Animations as Tweens")]
-        private Tween[] _cameraAnimations = new Tween[3];
+        private Tween[] _cameraAnimations = new Tween[2];
 
         [Tooltip("Stores processed CameraPreset")]
         private CameraPreset _currentPreset = null;
@@ -34,7 +37,6 @@ namespace Com.MyCompany.MyGame
         {
             var target = playerCamera.transform;
             _initialPreset.position = target.localPosition;
-            _initialPreset.rotation = target.localEulerAngles;
             _initialPreset.fieldOfView = playerCamera.m_Lens.FieldOfView;
             _currentPreset = _initialPreset;
         }
@@ -51,9 +53,7 @@ namespace Com.MyCompany.MyGame
             
             _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, targetPreset.animDuration)
                 .SetEase(targetPreset.animType);
-            _cameraAnimations[1] = playerCamera.transform.DOLocalRotate(targetPreset.rotation, targetPreset.animDuration)
-                .SetEase(targetPreset.animType);
-            _cameraAnimations[2] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
+            _cameraAnimations[1] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
                 x => playerCamera.m_Lens.FieldOfView = x, targetPreset.fieldOfView, targetPreset.animDuration)
                 .SetEase(targetPreset.animType);
         }
@@ -77,9 +77,9 @@ namespace Com.MyCompany.MyGame
 
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
         {
-            return state == Enums.PlayerStates.None ? 
-                _initialPreset : 
-                CameraPresetContainer.Instance.Find(state);
+            var preset = CameraPresetContainer.Instance.Find(state);
+
+            return preset ?? _initialPreset;
         }
 
         #endregion
@@ -90,6 +90,23 @@ namespace Com.MyCompany.MyGame
         {
             // Activates the camera if it's player itself
             playerCamera.gameObject.SetActive(status);
+        }
+
+        public void ValidateCameraRotation(float aimAlpha)
+        {
+            // Handle Camera Rotations
+            var target = playerCamera.transform;
+            var rotationA = new Vector3(55F, 0F, 0F);
+            var rotationB = new Vector3(-70F, 0F, 0F);
+            target.localRotation = Quaternion.Lerp(Quaternion.Euler(rotationA), Quaternion.Euler(rotationB), aimAlpha);
+            
+            // Handle Camera Positions
+            var currentPosition = target.localPosition;
+            var pointA = new Vector3(currentPosition.x, 3.5F, -.6F);
+            var pointB = DetermineCameraPreset(Enums.PlayerStates.OnIdle).position;
+            var pointC = new Vector3(currentPosition.x, .6F, -1.25F);
+            var lerp1 = Vector3.Lerp(pointA, pointB, aimAlpha);
+            target.localPosition = Vector3.Lerp(lerp1, pointC, aimAlpha);
         }
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)
@@ -109,7 +126,12 @@ namespace Com.MyCompany.MyGame
                 case Enums.PlayerStates.OnJump:
                 case Enums.PlayerStates.OnRun:
                 case Enums.PlayerStates.OnAim:
-                    Animate(DetermineCameraPreset(state));
+                {
+                    var preset = DetermineCameraPreset(state);
+                    
+                    if(preset != null)
+                        Animate(preset);
+                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

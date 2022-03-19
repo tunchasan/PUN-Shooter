@@ -1,5 +1,8 @@
+using System;
+using DG.Tweening;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
@@ -25,10 +28,11 @@ namespace Com.MyCompany.MyGame
 
         private PlayerCameraController _cameraController = null;
         
-        // "The current Health of our player"
-        private float _health = 100F;
+        private PlayerAnimationController _animationController = null;
 
         private CharacterController _characterController = null;
+
+        private PlayerBase _player = null;
 
         #endregion
 
@@ -49,6 +53,10 @@ namespace Com.MyCompany.MyGame
             _cameraController = GetComponent<PlayerCameraController>();
 
             _characterController = GetComponent<CharacterController>();
+
+            _animationController = GetComponent<PlayerAnimationController>();
+
+            _player = GetComponent<PlayerBase>();
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -65,7 +73,7 @@ namespace Com.MyCompany.MyGame
             LocalPlayerInstance = photonView.IsMine ? gameObject : LocalPlayerInstance;
 
             // Instantiate PlayerUI and Assign
-            InitializePlayerUI();
+            // InitializePlayerUI();
         }
 
         /// <summary>
@@ -74,9 +82,7 @@ namespace Com.MyCompany.MyGame
         private void Update()
         {
             if (photonView.IsMine)
-            {
                 ProcessInputs();
-            }
         }
 
         public override void OnEnable()
@@ -104,12 +110,12 @@ namespace Com.MyCompany.MyGame
             if (stream.IsWriting)
             {
                 stream.SendNext(_isFiring);
-                stream.SendNext(_health);
+                stream.SendNext(_inputDirection);
             }
             else
             {
                 _isFiring = (bool) stream.ReceiveNext();
-                _health = (float) stream.ReceiveNext();
+                _inputDirection = (Vector2) stream.ReceiveNext();
             }
         }
 
@@ -133,45 +139,14 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void ProcessInputs()
         {
-            // OnPlayerFires
-            if (Input.GetButtonDown("Fire1"))
-            {
-                OnFireAction(true);
-            }
+            ValidateLocomotion();
             
-            // OnPlayerNotFires
-            else if (Input.GetButtonUp("Fire1"))
-            {
-                OnFireAction(false);
-            }
-
-            // OnPlayerMoves
-            if (IsMoving())
-            {
-                OnMovementAction();
-            }
-
-            // OnPlayerIdle
-            else
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerAims
-            if (Input.GetButton("Fire2"))
-            {
-                OnAimAction(Input.mousePosition);
-            }
-            
-            // OnPlayerNotAims
-            else if (Input.GetButtonUp("Fire2"))
-            {
-                _cameraController.ProcessState(Enums.PlayerStates.OnIdle);
-            }
-            
-            // OnPlayerJumps
-            if(Input.GetKey(KeyCode.Space))
-                _cameraController.ProcessState(Enums.PlayerStates.OnJump);
+            if(Input.GetButtonDown("Run"))
+                UpdateSpeedMultiplier(true);
+            if(Input.GetButtonUp("Run"))
+                UpdateSpeedMultiplier(false);
+            if (Input.GetButtonDown("Jump"))
+                ProcessJump();
         }
 
         /// <summary>
@@ -215,34 +190,154 @@ namespace Com.MyCompany.MyGame
         #region Movement
 
         [Header("@MovementSystem")] 
-        [SerializeField] private float rotationSpeed = 10F;
+        [SerializeField] private float horizontalRotationSpeed = 10F;
+        [SerializeField] private float movementSpeed = 10F;
+        [SerializeField] private float jumpSpeed = 5F;
+        [SerializeField] private float jumpDuration = .25F;
 
-        [SerializeField] private float speed = 10F;
+        private float _currentSpeed = 0F;
+
+        private bool _isRunning = false;
+        private bool _isJumping = false;
+        private float _jumpVelocity = 0F;
         
-        private void OnMovementAction()
+        private Vector2 _inputDirection = Vector2.zero;
+
+        private void UpdateSpeedMultiplier(bool status)
         {
-            _cameraController.ProcessState(Enums.PlayerStates.OnRun);
-            
-            var h = Input.GetAxis("Horizontal");
-            var v = Input.GetAxis("Vertical");
-            var direction = new Vector2(h, v);
-            var velocity = new Vector3(h, Physics.gravity.y, v);
-            _characterController.Move(velocity * (Time.deltaTime * speed));
-            
-            // Handle Rotation
-            var currentRotation = transform.rotation;
-            var targetRotation = ValidateRotation(direction);
-            
-            // transform.rotation = Quaternion.Lerp(currentRotation, targetRotation, 
-            //     Time.deltaTime * rotationSpeed);
+            _isRunning = status;
+        }
+
+        private bool CanProcessLocomotion()
+        {
+            return true;
         }
         
-        private Quaternion ValidateRotation(Vector2 direction)
+        private void ValidateLocomotion()
         {
-            var targetRotation = 
-                Quaternion.Euler(new Vector3(0, Mathf.Atan2(direction.x, direction.y) * 180 / Mathf.PI, 0));
-    
-            return targetRotation;
+            if (CanProcessLocomotion())
+            {
+                ProcessMovement();
+            
+                ProcessRotation();
+
+                ProcessAim();
+            }
+        }
+
+        private bool CanJump()
+        {
+            return _characterController.isGrounded && !_isJumping;
+        }
+        
+        private void ProcessJump()
+        {
+            if(CanJump())
+            {
+                _isJumping = true;
+
+                DOTween.To(() => _jumpVelocity, x => _jumpVelocity = x, jumpSpeed, jumpDuration)
+                    .SetEase(Ease.OutCirc).OnComplete(() =>
+                    {
+                        DOTween.To(() => _jumpVelocity, x => _jumpVelocity = x, 0F, jumpDuration)
+                            .SetEase(Ease.InCirc).OnComplete(() =>
+                            {
+                                DOVirtual.DelayedCall(.25F, () => _isJumping = false);
+                            });
+                    });  
+                
+            }
+        }
+
+        private void ProcessMovement()
+        {
+            // Handle Player Movement
+            _inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            var moveHorizontalAxis = _inputDirection.x * transform.right;
+            var moveVerticalAxis = _inputDirection.y * transform.forward;
+            var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
+            var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
+            var fallSpeed = Physics.gravity.y / (2.5F * movementSpeed);
+            var direction = new Vector3(directionX, fallSpeed + _jumpVelocity, directionZ);
+            var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
+            
+            _characterController.Move(moveVelocity);
+
+            DetermineLocomotionData();
+        }
+
+        private float DetermineMovementSpeed(Vector2 inputDirection)
+        {
+            var multiplyValue = _isRunning ? 1.5F : 1F;
+
+            // Detect Strafe Movement || Detect Backward Movement
+            if (Mathf.Abs(inputDirection.x) > 0F || inputDirection.y < 0F)
+            {
+                return AnimatedMovementSpeed(multiplyValue * .5F);
+            }
+            
+            return AnimatedMovementSpeed(multiplyValue);
+        }
+
+        private float AnimatedMovementSpeed(float multiplyValue)
+        {
+            var targetSpeed = movementSpeed * multiplyValue;
+            _currentSpeed = Mathf.Lerp(_currentSpeed, targetSpeed, Time.deltaTime * 5F);
+            return _currentSpeed;
+        }
+        
+        private void DetermineLocomotionData()
+        {
+            var currentVelocity = _characterController.velocity.magnitude;
+
+            var direction = currentVelocity > .15F ? _inputDirection : Vector2.zero;
+            
+            _animationController.ProcessLocomotion(direction, _isRunning);
+        }
+ 
+        private void ProcessRotation()
+        {
+            var horizontalInput = Input.GetAxis("Mouse X");
+            var rotationSpeedMultiplier = Mathf.Abs(horizontalInput);
+            var rotationDirection = new Vector3(horizontalInput, 0F, 0F);
+            
+            if (rotationDirection.magnitude > float.Epsilon)
+            {
+                // Handle Player Rotation
+                var currentRotation = transform.eulerAngles;
+                var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
+                targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
+                var calculatedTargetRotation = new Vector3(0F, currentRotation.y + targetRotationAngle, 0F);
+                transform.eulerAngles =
+                    Vector3.Lerp(currentRotation, calculatedTargetRotation, 
+                        Time.deltaTime * rotationSpeedMultiplier * horizontalRotationSpeed);
+            }
+        }
+        
+        #endregion
+
+        #region AimSystem
+
+        [Header("@AimSystem")] 
+        [SerializeField] private Transform aimTarget = null;
+        [SerializeField] private GameObject aimPanel = null;
+        [SerializeField] private Vector2 aimLimits = Vector2.zero;
+        [SerializeField] private float aimSpeed = 5F;
+
+        private float _aimAlpha = 0.5F;
+
+        private void ProcessAim()
+        {
+            aimPanel.SetActive(photonView.IsMine);
+
+            var verticalInput = Input.GetAxis("Mouse Y");
+            _aimAlpha += verticalInput * Time.deltaTime * aimSpeed;
+            _aimAlpha = Mathf.Clamp(_aimAlpha, 0F, 1F);
+
+            aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
+                new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
+
+            _cameraController.ValidateCameraRotation(_aimAlpha);
         }
 
         #endregion

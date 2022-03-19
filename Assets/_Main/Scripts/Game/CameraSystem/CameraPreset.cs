@@ -11,5 +11,4 @@ public class CameraPreset
     public float animDuration = .5F;
     public Ease animType = Ease.Linear;
     public Vector3 position = Vector3.zero;
-    public Vector3 rotation = Vector3.zero;
 }

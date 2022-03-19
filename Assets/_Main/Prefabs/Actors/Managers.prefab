@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae2a385e31097aa49aa3524972cf240d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 1163090757147563949, guid: bc2833361baa7b54bbc1181c4c5ae18f, type: 3}
+  playerPrefab: {fileID: 4505347873417042059, guid: 505ef4b8d21ad5040a4083f22297e873, type: 3}
 --- !u!114 &4934152930916998906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,36 +60,31 @@ MonoBehaviour:
   presets:
   - title: Preset Idle
     state: 1
-    fieldOfView: 60
+    fieldOfView: 50
     animDuration: 0.75
     animType: 6
-    position: {x: 0, y: 2.5, z: -4.5}
-    rotation: {x: 10, y: 0, z: 0}
+    position: {x: 0.5, y: 4, z: -5}
   - title: Preset Run
     state: 3
     fieldOfView: 65
     animDuration: 0.5
     animType: 5
-    position: {x: 0, y: 2.5, z: -4.5}
-    rotation: {x: 12, y: 0, z: 0}
+    position: {x: 0.5, y: 2.5, z: -3.5}
   - title: Preset Jump
     state: 2
-    fieldOfView: 65
+    fieldOfView: 55
     animDuration: 0.5
     animType: 18
-    position: {x: 0, y: 3, z: -4.5}
-    rotation: {x: 15, y: 0, z: 0}
+    position: {x: 0.5, y: 3, z: -3.5}
   - title: Preset Aim
     state: 4
-    fieldOfView: 50
+    fieldOfView: 40
     animDuration: 0.6
     animType: 18
-    position: {x: 0.35, y: 2.5, z: -4}
-    rotation: {x: 10, y: 2, z: 0}
+    position: {x: 0.75, y: 2.5, z: -2.5}
   - title: Preset Death
     state: 6
     fieldOfView: 0
     animDuration: 0.5
     animType: 1
     position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}

@@ -6,13 +6,15 @@ namespace Com.MyCompany.MyGame
     {
         public enum PlayerStates
         {
-            None,
+            None = 0,
             OnIdle,
             OnJump,
             OnRun,
             OnAim,
             OnShoot,
-            OnDeath
+            OnDeath,
+            OnFalling,
+            OnGrounded
         }
-    } 
+    }
 }
