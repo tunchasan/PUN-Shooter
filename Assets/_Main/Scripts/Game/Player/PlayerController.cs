@@ -240,12 +240,13 @@ namespace Com.MyCompany.MyGame
 
         private float DetermineMovementSpeed(Vector2 inputDirection)
         {
-            var multiplyValue = _isRunning ? 1.4F : 1F;
+            var multiplyValue = _isRunning ? 1.5F : 1F;
 
             // Detect Strafe Movement || Detect Backward Movement
-
             if (Mathf.Abs(inputDirection.x) > 0F || inputDirection.y < 0F)
+            {
                 return AnimatedMovementSpeed(multiplyValue * .5F);
+            }
             
             return AnimatedMovementSpeed(multiplyValue);
         }
