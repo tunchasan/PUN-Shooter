@@ -145,6 +145,8 @@ namespace Com.MyCompany.MyGame
                 UpdateSpeedMultiplier(true);
             if(Input.GetButtonUp("Run"))
                 UpdateSpeedMultiplier(false);
+            if (Input.GetButtonDown("Jump"))
+                ProcessJump();
         }
 
         /// <summary>
@@ -189,13 +191,15 @@ namespace Com.MyCompany.MyGame
 
         [Header("@MovementSystem")] 
         [SerializeField] private float horizontalRotationSpeed = 10F;
-        [SerializeField] private float verticalRotationSpeed = 10F;
-        
-        [SerializeField] private float speed = 10F;
+        [SerializeField] private float movementSpeed = 10F;
+        [SerializeField] private float jumpSpeed = 5F;
+        [SerializeField] private float jumpDuration = .25F;
 
         private float _currentSpeed = 0F;
 
         private bool _isRunning = false;
+        private bool _isJumping = false;
+        private float _jumpVelocity = 0F;
         
         private Vector2 _inputDirection = Vector2.zero;
 
@@ -221,6 +225,30 @@ namespace Com.MyCompany.MyGame
             }
         }
 
+        private bool CanJump()
+        {
+            return _characterController.isGrounded && !_isJumping;
+        }
+        
+        private void ProcessJump()
+        {
+            if(CanJump())
+            {
+                _isJumping = true;
+
+                DOTween.To(() => _jumpVelocity, x => _jumpVelocity = x, jumpSpeed, jumpDuration)
+                    .SetEase(Ease.OutCirc).OnComplete(() =>
+                    {
+                        DOTween.To(() => _jumpVelocity, x => _jumpVelocity = x, 0F, jumpDuration)
+                            .SetEase(Ease.InCirc).OnComplete(() =>
+                            {
+                                DOVirtual.DelayedCall(.25F, () => _isJumping = false);
+                            });
+                    });  
+                
+            }
+        }
+
         private void ProcessMovement()
         {
             // Handle Player Movement
@@ -229,8 +257,8 @@ namespace Com.MyCompany.MyGame
             var moveVerticalAxis = _inputDirection.y * transform.forward;
             var directionX = moveHorizontalAxis.x + moveVerticalAxis.x;
             var directionZ = moveHorizontalAxis.z + moveVerticalAxis.z;
-            var fallSpeed = Physics.gravity.y / (2.5F * speed);
-            var direction = new Vector3(directionX, fallSpeed, directionZ);
+            var fallSpeed = Physics.gravity.y / (2.5F * movementSpeed);
+            var direction = new Vector3(directionX, fallSpeed + _jumpVelocity, directionZ);
             var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
             
             _characterController.Move(moveVelocity);
@@ -253,7 +281,7 @@ namespace Com.MyCompany.MyGame
 
         private float AnimatedMovementSpeed(float multiplyValue)
         {
-            var targetSpeed = speed * multiplyValue;
+            var targetSpeed = movementSpeed * multiplyValue;
             _currentSpeed = Mathf.Lerp(_currentSpeed, targetSpeed, Time.deltaTime * 5F);
             return _currentSpeed;
         }

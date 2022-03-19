@@ -192,12 +192,76 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].state
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].title
+      value: Preset Aim
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].state
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].title
+      value: Preset Death
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].animType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
       propertyPath: presets.Array.data[0].position.z
       value: -4.5
       objectReference: {fileID: 0}
     - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
       propertyPath: presets.Array.data[1].position.z
       value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].position.x
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].position.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].position.z
+      value: -2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].position.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].position.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].position.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].fieldOfView
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].fieldOfView
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[2].animDuration
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934152930916998906, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
+      propertyPath: presets.Array.data[3].animDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6280683111546670790, guid: 9892c501208c14b43b5b3bee643f2ede, type: 3}
       propertyPath: m_RootOrder
@@ -270,7 +334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4505347873416807595, guid: 505ef4b8d21ad5040a4083f22297e873, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4505347873416807595, guid: 505ef4b8d21ad5040a4083f22297e873, type: 3}
       propertyPath: m_LocalPosition.z
@@ -327,7 +391,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.05
+      value: 3.05
       objectReference: {fileID: 0}
     - target: {fileID: 1629643219, guid: e514c1b8399513142be865c0c49ad165, type: 3}
       propertyPath: m_LocalPosition.z
