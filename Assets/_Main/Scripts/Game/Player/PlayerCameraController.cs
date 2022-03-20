@@ -13,14 +13,14 @@ namespace Com.MyCompany.MyGame
         [Tooltip("Stores camera vertical rotation limits")] 
         [SerializeField] private float cameraRotationLimit = 25F;
 
-        [Tooltip("The Player's TPS Camera")]
+        [Tooltip("The Character's TPS Camera")]
         [SerializeField] private CinemachineVirtualCamera playerCamera = null;
         
         #endregion
 
         #region Private Fields
         
-        [Tooltip("Stores Player's Initial TPS Camera Settings")]
+        [Tooltip("Stores Character's Initial TPS Camera Settings")]
         private CameraPreset _initialPreset = new CameraPreset();
 
         [Tooltip("Stores playerCamera Animations as Tweens")]

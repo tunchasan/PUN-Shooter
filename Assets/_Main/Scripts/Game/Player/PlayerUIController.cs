@@ -8,11 +8,11 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Serializable Fields
 
-        [Tooltip("UI Text to display Player's Name")]
+        [Tooltip("UI Text to display Character's Name")]
         [SerializeField]
         private TextMeshProUGUI playerNameText;
 
-        [Tooltip("UI Slider to display Player's Health")]
+        [Tooltip("UI Slider to display Character's Health")]
         [SerializeField]
         private Slider playerHealthSlider;
         
@@ -20,7 +20,7 @@ namespace Com.MyCompany.MyGame
 
         #region Private Fields
 
-        private PlayerController target = null;
+        private CharacterController target = null;
         
         private float characterControllerHeight = 0f;
         private Transform targetTransform;
@@ -49,13 +49,13 @@ namespace Com.MyCompany.MyGame
 
         private void Update()
         {
-            // Reflect the Player Health
+            // Reflect the Character Health
             if (playerHealthSlider != null)
             {
                 //playerHealthSlider.value = target.Health;
             }
             
-            // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
+            // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Character over the network
             if (target == null)
             {
                 Destroy(gameObject);
@@ -85,7 +85,7 @@ namespace Com.MyCompany.MyGame
 
         #region Public Methods
 
-        public void SetTarget(PlayerController _target)
+        public void SetTarget(CharacterController _target)
         {
             if (_target == null)
             {
@@ -98,8 +98,8 @@ namespace Com.MyCompany.MyGame
             
             targetTransform = this.target.GetComponent<Transform>();
             targetRenderer = this.target.GetComponent<Renderer>();
-            var characterController = _target.GetComponent<CharacterController> ();
-            // Get data from the Player that won't change during the lifetime of this Component
+            var characterController = _target.GetComponent<UnityEngine.CharacterController> ();
+            // Get data from the Character that won't change during the lifetime of this Component
             if (characterController != null)
                 characterControllerHeight = characterController.height;
             

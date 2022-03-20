@@ -17,7 +17,7 @@ namespace Com.MyCompany.MyGame
             SceneManager.LoadScene(0);
         }
         
-        public override void OnPlayerEnteredRoom(Player other)
+        public override void OnPlayerEnteredRoom(Photon.Realtime.Player other)
         {
             Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
 
@@ -30,7 +30,7 @@ namespace Com.MyCompany.MyGame
         }
 
 
-        public override void OnPlayerLeftRoom(Player other)
+        public override void OnPlayerLeftRoom(Photon.Realtime.Player other)
         {
             Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
 
@@ -64,6 +64,13 @@ namespace Com.MyCompany.MyGame
 
         #region MonobehaviourCallbacks
 
+        private void Awake()
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+            Cursor.visible = false;
+        }
+        
         private void Start()
         {
             Instance = this;
@@ -72,7 +79,7 @@ namespace Com.MyCompany.MyGame
                 Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'",this);
             else
             {
-                if (PlayerController.LocalPlayerInstance == null)
+                if (CharacterController.LocalPlayerInstance == null)
                 {
                     Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                     // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate

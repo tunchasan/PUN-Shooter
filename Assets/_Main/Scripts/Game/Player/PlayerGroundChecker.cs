@@ -7,9 +7,9 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Fields
         
-        private CharacterController _characterController = null;
+        private UnityEngine.CharacterController _characterController = null;
 
-        private PlayerBase _player = null;
+        private Character _character = null;
 
         private PlayerAnimationController _animationController = null;
 
@@ -21,10 +21,10 @@ namespace Com.MyCompany.MyGame
 
         private void Awake()
         {
-            _characterController = GetComponent<CharacterController>();
+            _characterController = GetComponent<UnityEngine.CharacterController>();
             _animationController = GetComponent<PlayerAnimationController>();
             _playerAnimationEvents = GetComponentInChildren<PlayerAnimationEvents>();
-            _player = GetComponent<PlayerBase>();
+            _character = GetComponent<Character>();
         }
 
         private void Start()
@@ -62,7 +62,7 @@ namespace Com.MyCompany.MyGame
                 Enums.PlayerStates.OnFalling : 
                 Enums.PlayerStates.OnGrounded;
 
-            if (nextStatus != _player.CurrentState)
+            if (nextStatus != _character.CurrentState)
             {
                 ProcessStatus(nextStatus);
             }
@@ -76,18 +76,18 @@ namespace Com.MyCompany.MyGame
                 {
                     _animationController.PlayFallingAnimation();
 
-                    _player.UpdateState(Enums.PlayerStates.OnFalling);
+                    _character.UpdateState(Enums.PlayerStates.OnFalling);
                     
                     break;
                 }
 
                 case Enums.PlayerStates.OnGrounded:
                 {
-                    if (_player.CurrentState == Enums.PlayerStates.OnFalling)
+                    if (_character.CurrentState == Enums.PlayerStates.OnFalling)
                     {
                         _animationController.PlayGroundedAnimation();
 
-                        _player.UpdateState(Enums.PlayerStates.OnGrounded);
+                        _character.UpdateState(Enums.PlayerStates.OnGrounded);
                     }
                     
                     break;
@@ -97,11 +97,11 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessOnGroundedAction()
         {
-            if (_player.CurrentState == Enums.PlayerStates.OnGrounded)
+            if (_character.CurrentState == Enums.PlayerStates.OnGrounded)
             {
-                Debug.Log("Player has grounded");
+                Debug.Log("Character has grounded");
 
-                _player.UpdateState(Enums.PlayerStates.OnIdle);
+                _character.UpdateState(Enums.PlayerStates.OnIdle);
             }
         }
 

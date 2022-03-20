@@ -8,7 +8,7 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Serialized Fields
 
-        [Tooltip("Stores Player Cameras Presets")] 
+        [Tooltip("Stores Character Cameras Presets")] 
         [SerializeField] private List<CameraPreset> presets = new List<CameraPreset>();
 
         #endregion

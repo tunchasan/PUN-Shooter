@@ -22,7 +22,7 @@ namespace Photon.Chat.UtilityScripts
         void OnEnable()
         {
             #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-            Debug.LogError("PUN Demos are not compatible with the New Input System, unless you enable \"Both\" in: Edit > Project Settings > Player > Active Input Handling. Pausing App.");
+            Debug.LogError("PUN Demos are not compatible with the New Input System, unless you enable \"Both\" in: Edit > Project Settings > Character > Active Input Handling. Pausing App.");
             Debug.Break();
             return;
             #endif

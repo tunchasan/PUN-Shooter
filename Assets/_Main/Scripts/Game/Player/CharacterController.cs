@@ -1,22 +1,20 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
     /// <summary>
-    /// Player manager.
+    /// Character manager.
     /// Handles fire Input and Beams.
     /// </summary>
     
     [RequireComponent(typeof(PlayerCameraController))]
-    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
+    public class CharacterController : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Private Serialized Fields
 
-        [Tooltip("The Player's UI GameObject Prefab")]
+        [Tooltip("The Character's UI GameObject Prefab")]
         [SerializeField] private GameObject playerUiPrefab;
 
         #endregion
@@ -30,9 +28,9 @@ namespace Com.MyCompany.MyGame
         
         private PlayerAnimationController _animationController = null;
 
-        private CharacterController _characterController = null;
+        private UnityEngine.CharacterController _characterController = null;
 
-        private PlayerBase _player = null;
+        private Character _character = null;
 
         #endregion
 
@@ -52,11 +50,11 @@ namespace Com.MyCompany.MyGame
         {
             _cameraController = GetComponent<PlayerCameraController>();
 
-            _characterController = GetComponent<CharacterController>();
+            _characterController = GetComponent<UnityEngine.CharacterController>();
 
             _animationController = GetComponent<PlayerAnimationController>();
 
-            _player = GetComponent<PlayerBase>();
+            _character = GetComponent<Character>();
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -251,7 +249,7 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessMovement()
         {
-            // Handle Player Movement
+            // Handle Character Movement
             _inputDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             var moveHorizontalAxis = _inputDirection.x * transform.right;
             var moveVerticalAxis = _inputDirection.y * transform.forward;
@@ -303,7 +301,7 @@ namespace Com.MyCompany.MyGame
             
             if (rotationDirection.magnitude > float.Epsilon)
             {
-                // Handle Player Rotation
+                // Handle Character Rotation
                 var currentRotation = transform.eulerAngles;
                 var targetRotationAngle = Quaternion.LookRotation(rotationDirection, Vector3.up).eulerAngles.y;
                 targetRotationAngle = targetRotationAngle < 180 ? targetRotationAngle : targetRotationAngle - 360;
