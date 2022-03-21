@@ -77,7 +77,9 @@ namespace Com.MyCompany.MyGame
             {
                 targetPosition = targetTransform.position;
                 targetPosition.y += characterControllerHeight;
-                transform.position = Camera.main.WorldToScreenPoint (targetPosition) + screenOffset * 1.5F;
+                if (UnityEngine.Camera.main is { })
+                    transform.position =
+                        UnityEngine.Camera.main.WorldToScreenPoint(targetPosition) + screenOffset * 1.5F;
             }
         }
         

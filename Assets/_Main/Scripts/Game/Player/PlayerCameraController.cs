@@ -4,14 +4,13 @@ using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Com.MyCompany.MyGame
+namespace Com.MyCompany.MyGame.Camera
 {
     public class PlayerCameraController : MonoBehaviour
     {
         #region Private Serialized Fields
 
-        [Tooltip("Stores camera vertical rotation limits")] 
-        [SerializeField] private float cameraRotationLimit = 25F;
+        [SerializeField] private CameraPresetContainer_SO presetContainer = null;
 
         [Tooltip("The Character's TPS Camera")]
         [SerializeField] private CinemachineVirtualCamera playerCamera = null;
@@ -21,10 +20,10 @@ namespace Com.MyCompany.MyGame
         #region Private Fields
         
         [Tooltip("Stores Character's Initial TPS Camera Settings")]
-        private CameraPreset _initialPreset = new CameraPreset();
+        private readonly CameraPreset _initialPreset = new CameraPreset();
 
-        [Tooltip("Stores playerCamera Animations as Tweens")]
-        private Tween[] _cameraAnimations = new Tween[2];
+        [Tooltip("Stores playerCamera Animations as Tween")]
+        private readonly Tween[] _cameraAnimations = new Tween[2];
 
         [Tooltip("Stores processed CameraPreset")]
         private CameraPreset _currentPreset = null;
@@ -36,8 +35,8 @@ namespace Com.MyCompany.MyGame
         private void Awake()
         {
             var target = playerCamera.transform;
-            _initialPreset.position = target.localPosition;
-            _initialPreset.fieldOfView = playerCamera.m_Lens.FieldOfView;
+            _initialPreset.SetCameraOffset(target.localPosition);
+            _initialPreset.SetFieldOfView(playerCamera.m_Lens.FieldOfView);
             _currentPreset = _initialPreset;
         }
 
@@ -51,11 +50,11 @@ namespace Com.MyCompany.MyGame
 
             _currentPreset = targetPreset;
             
-            _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.position, targetPreset.animDuration)
-                .SetEase(targetPreset.animType);
+            _cameraAnimations[0] = playerCamera.transform.DOLocalMove(targetPreset.GetCameraOffset, targetPreset.GetAnimationDuration)
+                .SetEase(targetPreset.GetAnimationType);
             _cameraAnimations[1] = DOTween.To(() => playerCamera.m_Lens.FieldOfView,
-                x => playerCamera.m_Lens.FieldOfView = x, targetPreset.fieldOfView, targetPreset.animDuration)
-                .SetEase(targetPreset.animType);
+                x => playerCamera.m_Lens.FieldOfView = x, targetPreset.GetFieldOfView, targetPreset.GetAnimationDuration)
+                .SetEase(targetPreset.GetAnimationType);
         }
         
         private void StopAllAnimations()
@@ -77,7 +76,7 @@ namespace Com.MyCompany.MyGame
 
         private CameraPreset DetermineCameraPreset(Enums.PlayerStates state)
         {
-            var preset = CameraPresetContainer.Instance.Find(state);
+            var preset = presetContainer.Find(state);
 
             return preset ?? _initialPreset;
         }
@@ -103,7 +102,7 @@ namespace Com.MyCompany.MyGame
             // Handle Camera Positions
             var currentPosition = target.localPosition;
             var pointA = new Vector3(currentPosition.x, 3.5F, -.6F);
-            var pointB = DetermineCameraPreset(Enums.PlayerStates.OnIdle).position;
+            var pointB = DetermineCameraPreset(Enums.PlayerStates.OnIdle).GetCameraOffset;
             var pointC = new Vector3(currentPosition.x, .6F, -1.25F);
             var lerp1 = Vector3.Lerp(pointA, pointB, aimAlpha);
             target.localPosition = Vector3.Lerp(lerp1, pointC, aimAlpha);
@@ -111,7 +110,7 @@ namespace Com.MyCompany.MyGame
 
         public void ProcessState(Enums.PlayerStates state, Transform target = null)
         {
-            if(_currentPreset.state == state) return;
+            if(_currentPreset.GetState == state) return;
 
             switch (state)
             {

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043c3332acb7edc4792ac75ef15b4b2f, type: 3}
+  m_Name: CameraPresets
+  m_EditorClassIdentifier: 
+  presets:
+  - title: Preset Idle
+    state: 1
+    fieldOfView: 50
+    animDuration: 0.75
+    animType: 6
+    position: {x: 0.5, y: 4, z: -5}
+  - title: Preset Run
+    state: 3
+    fieldOfView: 65
+    animDuration: 0.5
+    animType: 5
+    position: {x: 0.5, y: 2.5, z: -3.5}
+  - title: Preset Jump
+    state: 2
+    fieldOfView: 55
+    animDuration: 0.5
+    animType: 18
+    position: {x: 0.5, y: 3, z: -3.5}
+  - title: Preset Aim
+    state: 4
+    fieldOfView: 40
+    animDuration: 0.6
+    animType: 18
+    position: {x: 0.75, y: 2.5, z: -2.5}
+  - title: Preset Death
+    state: 6
+    fieldOfView: 0
+    animDuration: 0.5
+    animType: 1
+    position: {x: 0, y: 0, z: 0}

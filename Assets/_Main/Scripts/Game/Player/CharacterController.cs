@@ -1,3 +1,4 @@
+using Com.MyCompany.MyGame.Camera;
 using DG.Tweening;
 using UnityEngine;
 using Photon.Pun;
@@ -9,13 +10,12 @@ namespace Com.MyCompany.MyGame
     /// Handles fire Input and Beams.
     /// </summary>
     
-    [RequireComponent(typeof(PlayerCameraController))]
     public class CharacterController : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Private Serialized Fields
-
-        [Tooltip("The Character's UI GameObject Prefab")]
-        [SerializeField] private GameObject playerUiPrefab;
+        
+        [SerializeField]
+        private PlayerCameraController cameraController = null;
 
         #endregion
 
@@ -23,8 +23,6 @@ namespace Com.MyCompany.MyGame
 
         //True, when the user is firing
         private bool _isFiring = false;
-
-        private PlayerCameraController _cameraController = null;
         
         private PlayerAnimationController _animationController = null;
 
@@ -48,8 +46,6 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void Awake()
         {
-            _cameraController = GetComponent<PlayerCameraController>();
-
             _characterController = GetComponent<UnityEngine.CharacterController>();
 
             _animationController = GetComponent<PlayerAnimationController>();
@@ -64,7 +60,7 @@ namespace Com.MyCompany.MyGame
         private void Start()
         {
             // Validate Camera Visibility
-            _cameraController.ValidateStatus(photonView.IsMine);
+            cameraController.ValidateStatus(photonView.IsMine);
             
             // #Important
             // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
@@ -147,19 +143,6 @@ namespace Com.MyCompany.MyGame
                 ProcessJump();
         }
 
-        /// <summary>
-        /// Instantiates PlayerUI prefab and assign the object's target as this
-        /// </summary>
-        private void InitializePlayerUI()
-        {
-            if (playerUiPrefab != null)
-                Instantiate(playerUiPrefab).SendMessage ("SetTarget", this, 
-                    SendMessageOptions.RequireReceiver);
-            else
-                Debug.LogWarning("<Color=Red><a>Missing</a></Color> " +
-                                 "PlayerUiPrefab reference on player Prefab.", this);
-        }
-
         private bool IsMoving()
         {
             var h = Input.GetAxis("Horizontal");
@@ -173,14 +156,14 @@ namespace Com.MyCompany.MyGame
         {
             _isFiring = status;
             
-            _cameraController.ProcessState(Enums.PlayerStates.OnShoot);
+            cameraController.ProcessState(Enums.PlayerStates.OnShoot);
             
             Debug.Log(_isFiring ? "Fire" : "Not Fire");
         }
 
         private void OnAimAction(Vector2 aimPos)
         {
-            _cameraController.ProcessState(Enums.PlayerStates.OnAim);
+            cameraController.ProcessState(Enums.PlayerStates.OnAim);
             
             Debug.LogFormat("On Aim at {0}", aimPos);
         }
@@ -335,7 +318,7 @@ namespace Com.MyCompany.MyGame
             aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
                 new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
 
-            _cameraController.ValidateCameraRotation(_aimAlpha);
+            cameraController.ValidateCameraRotation(_aimAlpha);
         }
 
         #endregion

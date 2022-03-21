@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Com.MyCompany.MyGame
+namespace Com.MyCompany.MyGame.Camera
 {
-    public class CameraPresetContainer : Singleton<CameraPresetContainer>
+    [CreateAssetMenu]
+    public class CameraPresetContainer_SO : ScriptableObject
     {
         #region Private Serialized Fields
 
@@ -17,10 +18,10 @@ namespace Com.MyCompany.MyGame
 
         public CameraPreset Find(Enums.PlayerStates state)
         {
-            var isExist = presets.Any(preset => preset.state == state);
+            var isExist = presets.Any(preset => preset.GetState == state);
             
             return isExist ? presets.
-                FirstOrDefault((elem) => elem.state == state) : null;
+                FirstOrDefault((elem) => elem.GetState == state) : null;
         }
 
         #endregion
