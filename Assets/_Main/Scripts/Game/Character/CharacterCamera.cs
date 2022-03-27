@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Com.MyCompany.MyGame.Camera
 {
-    public class PlayerCameraController : MonoBehaviour
+    public class CharacterCamera : MonoBehaviour
     {
         #region Private Serialized Fields
 

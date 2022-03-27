@@ -3,29 +3,22 @@ using UnityEngine;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerGroundChecker : MonoBehaviour
+    public class CharacterGroundChecker : MonoBehaviour
     {
         #region Private Fields
         
-        private UnityEngine.CharacterController _characterController = null;
+        [Header("@References")]
+        [SerializeField] private  Character character = null;
 
-        private Character _character = null;
+        [SerializeField] private UnityEngine.CharacterController characterController = null;
 
-        private PlayerAnimationController _animationController = null;
+        [SerializeField] private CharacterAnimation animationController = null;
 
-        private PlayerAnimationEvents _playerAnimationEvents = null;
+        [SerializeField] private CharacterAnimationEvents animationEventHandler = null;
         
         #endregion
         
         #region MonoBehaviour Callbacks
-
-        private void Awake()
-        {
-            _characterController = GetComponent<UnityEngine.CharacterController>();
-            _animationController = GetComponent<PlayerAnimationController>();
-            _playerAnimationEvents = GetComponentInChildren<PlayerAnimationEvents>();
-            _character = GetComponent<Character>();
-        }
 
         private void Start()
         {
@@ -34,12 +27,12 @@ namespace Com.MyCompany.MyGame
 
         private void OnEnable()
         {
-            _playerAnimationEvents.OnGroundedAnimationComplete += ProcessOnGroundedAction;
+            animationEventHandler.OnGroundedAnimationComplete += ProcessOnGroundedAction;
         }
         
         private void OnDisable()
         {
-            _playerAnimationEvents.OnGroundedAnimationComplete -= ProcessOnGroundedAction;
+            animationEventHandler.OnGroundedAnimationComplete -= ProcessOnGroundedAction;
         }
 
         #endregion
@@ -50,7 +43,7 @@ namespace Com.MyCompany.MyGame
         {
             while (true)
             {
-                ChangeStatus(!_characterController.isGrounded);
+                ChangeStatus(!characterController.isGrounded);
                 
                 yield return new WaitForSeconds(.1F);
             }
@@ -62,7 +55,7 @@ namespace Com.MyCompany.MyGame
                 Enums.PlayerStates.OnFalling : 
                 Enums.PlayerStates.OnGrounded;
 
-            if (nextStatus != _character.CurrentState)
+            if (nextStatus != character.CurrentState)
             {
                 ProcessStatus(nextStatus);
             }
@@ -74,20 +67,20 @@ namespace Com.MyCompany.MyGame
             {
                 case Enums.PlayerStates.OnFalling:
                 {
-                    _animationController.PlayFallingAnimation();
+                    animationController.PlayFallingAnimation();
 
-                    _character.UpdateState(Enums.PlayerStates.OnFalling);
+                    character.UpdateState(Enums.PlayerStates.OnFalling);
                     
                     break;
                 }
 
                 case Enums.PlayerStates.OnGrounded:
                 {
-                    if (_character.CurrentState == Enums.PlayerStates.OnFalling)
+                    if (character.CurrentState == Enums.PlayerStates.OnFalling)
                     {
-                        _animationController.PlayGroundedAnimation();
+                        animationController.PlayGroundedAnimation();
 
-                        _character.UpdateState(Enums.PlayerStates.OnGrounded);
+                        character.UpdateState(Enums.PlayerStates.OnGrounded);
                     }
                     
                     break;
@@ -97,11 +90,11 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessOnGroundedAction()
         {
-            if (_character.CurrentState == Enums.PlayerStates.OnGrounded)
+            if (character.CurrentState == Enums.PlayerStates.OnGrounded)
             {
                 Debug.Log("Character has grounded");
 
-                _character.UpdateState(Enums.PlayerStates.OnIdle);
+                character.UpdateState(Enums.PlayerStates.OnIdle);
             }
         }
 

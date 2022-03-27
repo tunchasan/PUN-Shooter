@@ -15,7 +15,7 @@ namespace Com.MyCompany.MyGame
         #region Private Serialized Fields
         
         [SerializeField]
-        private PlayerCameraController cameraController = null;
+        private CharacterCamera camera = null;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace Com.MyCompany.MyGame
         //True, when the user is firing
         private bool _isFiring = false;
         
-        private PlayerAnimationController _animationController = null;
+        private CharacterAnimation _animation = null;
 
         private UnityEngine.CharacterController _characterController = null;
 
@@ -48,7 +48,7 @@ namespace Com.MyCompany.MyGame
         {
             _characterController = GetComponent<UnityEngine.CharacterController>();
 
-            _animationController = GetComponent<PlayerAnimationController>();
+            _animation = GetComponent<CharacterAnimation>();
 
             _character = GetComponent<Character>();
             
@@ -60,7 +60,7 @@ namespace Com.MyCompany.MyGame
         private void Start()
         {
             // Validate Camera Visibility
-            cameraController.ValidateStatus(photonView.IsMine);
+            camera.ValidateStatus(photonView.IsMine);
             
             // #Important
             // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
@@ -156,14 +156,14 @@ namespace Com.MyCompany.MyGame
         {
             _isFiring = status;
             
-            cameraController.ProcessState(Enums.PlayerStates.OnShoot);
+            camera.ProcessState(Enums.PlayerStates.OnShoot);
             
             Debug.Log(_isFiring ? "Fire" : "Not Fire");
         }
 
         private void OnAimAction(Vector2 aimPos)
         {
-            cameraController.ProcessState(Enums.PlayerStates.OnAim);
+            camera.ProcessState(Enums.PlayerStates.OnAim);
             
             Debug.LogFormat("On Aim at {0}", aimPos);
         }
@@ -273,7 +273,7 @@ namespace Com.MyCompany.MyGame
 
             var direction = currentVelocity > .15F ? _inputDirection : Vector2.zero;
             
-            _animationController.ProcessLocomotion(direction, _isRunning);
+            _animation.ProcessLocomotion(direction, _isRunning);
         }
  
         private void ProcessRotation()
@@ -318,7 +318,7 @@ namespace Com.MyCompany.MyGame
             aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
                 new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
 
-            cameraController.ValidateCameraRotation(_aimAlpha);
+            camera.ValidateCameraRotation(_aimAlpha);
         }
 
         #endregion

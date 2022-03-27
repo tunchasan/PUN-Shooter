@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerUIController : MonoBehaviour
+    public class CharacterUI : MonoBehaviour
     {
         #region Private Serializable Fields
 
