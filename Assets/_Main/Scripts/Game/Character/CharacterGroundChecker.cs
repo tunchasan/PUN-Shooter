@@ -1,38 +1,65 @@
 using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame
 {
+    /// <summary>
+    /// Helper class that detects slopes, heights and simulates
+    /// character's falling action with it's animations.
+    /// </summary>
     public class CharacterGroundChecker : MonoBehaviour
     {
+        #region Summary
+
+        [Title("Summary")]
+        [InfoBox("Helper class that detects slopes, heights and simulates " +
+                 "character's falling action with it's animations.")]
+        [HideLabel]
+        [DisplayAsString]
+        public string summary = "";
+
+        #endregion
+        
         #region Private Fields
         
-        [Header("@References")]
-        [SerializeField] private  Character character = null;
+        private Character _character = null;
 
-        [SerializeField] private UnityEngine.CharacterController characterController = null;
+        private UnityEngine.CharacterController _characterController = null;
 
-        [SerializeField] private CharacterAnimation animationController = null;
+        private CharacterAnimation _animationController = null;
 
-        [SerializeField] private CharacterAnimationEvents animationEventHandler = null;
+        private CharacterAnimationEvents _animationEventHandler = null;
         
         #endregion
         
         #region MonoBehaviour Callbacks
 
-        private void Start()
-        {
-            StartCoroutine(ValidateStatus());
-        }
-
         private void OnEnable()
         {
-            animationEventHandler.OnGroundedAnimationComplete += ProcessOnGroundedAction;
+            _animationEventHandler.OnGroundedAnimationComplete += ProcessOnGroundedAction;
         }
         
         private void OnDisable()
         {
-            animationEventHandler.OnGroundedAnimationComplete -= ProcessOnGroundedAction;
+            _animationEventHandler.OnGroundedAnimationComplete -= ProcessOnGroundedAction;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void InitializeSystem(Character character, 
+            UnityEngine.CharacterController controller, 
+            CharacterAnimation characterAnimation, 
+            CharacterAnimationEvents animationEvents)
+        {
+            _character = character;
+            _characterController = controller;
+            _animationController = characterAnimation;
+            _animationEventHandler = animationEvents;
+            
+            StartCoroutine(ValidateStatus());
         }
 
         #endregion
@@ -43,7 +70,7 @@ namespace Com.MyCompany.MyGame
         {
             while (true)
             {
-                ChangeStatus(!characterController.isGrounded);
+                ChangeStatus(!_characterController.isGrounded);
                 
                 yield return new WaitForSeconds(.1F);
             }
@@ -55,7 +82,7 @@ namespace Com.MyCompany.MyGame
                 Enums.PlayerStates.OnFalling : 
                 Enums.PlayerStates.OnGrounded;
 
-            if (nextStatus != character.CurrentState)
+            if (nextStatus != _character.CurrentState)
             {
                 ProcessStatus(nextStatus);
             }
@@ -67,20 +94,20 @@ namespace Com.MyCompany.MyGame
             {
                 case Enums.PlayerStates.OnFalling:
                 {
-                    animationController.PlayFallingAnimation();
+                    _animationController.PlayFallingAnimation();
 
-                    character.UpdateState(Enums.PlayerStates.OnFalling);
+                    _character.UpdateState(Enums.PlayerStates.OnFalling);
                     
                     break;
                 }
 
                 case Enums.PlayerStates.OnGrounded:
                 {
-                    if (character.CurrentState == Enums.PlayerStates.OnFalling)
+                    if (_character.CurrentState == Enums.PlayerStates.OnFalling)
                     {
-                        animationController.PlayGroundedAnimation();
+                        _animationController.PlayGroundedAnimation();
 
-                        character.UpdateState(Enums.PlayerStates.OnGrounded);
+                        _character.UpdateState(Enums.PlayerStates.OnGrounded);
                     }
                     
                     break;
@@ -90,11 +117,11 @@ namespace Com.MyCompany.MyGame
 
         private void ProcessOnGroundedAction()
         {
-            if (character.CurrentState == Enums.PlayerStates.OnGrounded)
+            if (_character.CurrentState == Enums.PlayerStates.OnGrounded)
             {
                 Debug.Log("Character has grounded");
 
-                character.UpdateState(Enums.PlayerStates.OnIdle);
+                _character.UpdateState(Enums.PlayerStates.OnIdle);
             }
         }
 

@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame
@@ -6,10 +7,13 @@ namespace Com.MyCompany.MyGame
     public class CharacterAnimation : MonoBehaviourPun
     {
         #region Private Serializable Fields
-
-        [SerializeField]
-        private float directionDampTime = 0.25f;
-
+        
+        [TitleGroup("References")]
+        [SerializeField] private Transform animationRoot = null;
+        
+        [TitleGroup("Configurations")]
+        [SerializeField] private float directionDampTime = 0.25f;
+        
         #endregion
         
         #region Private Fields
@@ -32,14 +36,7 @@ namespace Com.MyCompany.MyGame
         
         #region MonoBehaviour Callbacks
 
-        // Use this for initialization
-        private void Awake()
-        {
-            _animator = GetComponentInChildren<Animator>();
-            
-            if (!_animator)
-                Debug.LogError("PlayerAnimatorManager is Missing Animator Component", this);
-        }
+        // TODO
 
         #endregion
 
@@ -56,6 +53,11 @@ namespace Com.MyCompany.MyGame
         
         #region Public Methods
 
+        public void Initialize()
+        {
+            _animator = animationRoot.GetComponentInChildren<Animator>();
+        }
+        
         public void ProcessLocomotion(Vector2 direction, bool isRunning)
         {
             if (CanProcessAnimation())

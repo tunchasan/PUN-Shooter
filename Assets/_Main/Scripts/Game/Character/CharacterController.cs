@@ -2,6 +2,7 @@ using Com.MyCompany.MyGame.Camera;
 using DG.Tweening;
 using UnityEngine;
 using Photon.Pun;
+using Sirenix.OdinInspector;
 
 namespace Com.MyCompany.MyGame
 {
@@ -13,22 +14,27 @@ namespace Com.MyCompany.MyGame
     public class CharacterController : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Private Serialized Fields
-        
-        [SerializeField]
-        private CharacterCamera camera = null;
 
+        [TitleGroup("References")]
+
+        [SerializeField] private Character character = null;
+
+        [SerializeField] private CharacterCamera characterCamera = null;
+
+        [SerializeField] private CharacterAnimation animationController = null;
+        
+        [SerializeField] private CharacterAnimationEvents animationEventsController = null;
+
+        [SerializeField] private UnityEngine.CharacterController characterController = null;
+
+        [SerializeField] private CharacterGroundChecker groundChecker = null;
+        
         #endregion
 
         #region Private Fields
 
         //True, when the user is firing
         private bool _isFiring = false;
-        
-        private CharacterAnimation _animation = null;
-
-        private UnityEngine.CharacterController _characterController = null;
-
-        private Character _character = null;
 
         #endregion
 
@@ -46,11 +52,12 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         private void Awake()
         {
-            _characterController = GetComponent<UnityEngine.CharacterController>();
-
-            _animation = GetComponent<CharacterAnimation>();
-
-            _character = GetComponent<Character>();
+            // Initialize AnimationController
+            animationController.Initialize();
+            
+            // Initialize GroundChecker
+            groundChecker.InitializeSystem(character, characterController, 
+                animationController, animationEventsController);
             
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -60,7 +67,7 @@ namespace Com.MyCompany.MyGame
         private void Start()
         {
             // Validate Camera Visibility
-            camera.ValidateStatus(photonView.IsMine);
+            characterCamera.ValidateStatus(photonView.IsMine);
             
             // #Important
             // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
@@ -156,21 +163,21 @@ namespace Com.MyCompany.MyGame
         {
             _isFiring = status;
             
-            camera.ProcessState(Enums.PlayerStates.OnShoot);
+            characterCamera.ProcessState(Enums.PlayerStates.OnShoot);
             
             Debug.Log(_isFiring ? "Fire" : "Not Fire");
         }
 
         private void OnAimAction(Vector2 aimPos)
         {
-            camera.ProcessState(Enums.PlayerStates.OnAim);
+            characterCamera.ProcessState(Enums.PlayerStates.OnAim);
             
             Debug.LogFormat("On Aim at {0}", aimPos);
         }
 
         #region Movement
 
-        [Header("@MovementSystem")] 
+        [TitleGroup("MovementSystem")] 
         [SerializeField] private float horizontalRotationSpeed = 10F;
         [SerializeField] private float movementSpeed = 10F;
         [SerializeField] private float jumpSpeed = 5F;
@@ -208,7 +215,7 @@ namespace Com.MyCompany.MyGame
 
         private bool CanJump()
         {
-            return _characterController.isGrounded && !_isJumping;
+            return characterController.isGrounded && !_isJumping;
         }
         
         private void ProcessJump()
@@ -242,7 +249,7 @@ namespace Com.MyCompany.MyGame
             var direction = new Vector3(directionX, fallSpeed + _jumpVelocity, directionZ);
             var moveVelocity = direction * (DetermineMovementSpeed(_inputDirection) * Time.deltaTime);
             
-            _characterController.Move(moveVelocity);
+            characterController.Move(moveVelocity);
 
             DetermineLocomotionData();
         }
@@ -269,11 +276,11 @@ namespace Com.MyCompany.MyGame
         
         private void DetermineLocomotionData()
         {
-            var currentVelocity = _characterController.velocity.magnitude;
+            var currentVelocity = characterController.velocity.magnitude;
 
             var direction = currentVelocity > .15F ? _inputDirection : Vector2.zero;
             
-            _animation.ProcessLocomotion(direction, _isRunning);
+            animationController.ProcessLocomotion(direction, _isRunning);
         }
  
         private void ProcessRotation()
@@ -299,7 +306,7 @@ namespace Com.MyCompany.MyGame
 
         #region AimSystem
 
-        [Header("@AimSystem")] 
+        [TitleGroup("AimSystem")] 
         [SerializeField] private Transform aimTarget = null;
         [SerializeField] private GameObject aimPanel = null;
         [SerializeField] private Vector2 aimLimits = Vector2.zero;
@@ -318,7 +325,7 @@ namespace Com.MyCompany.MyGame
             aimTarget.localPosition = Vector3.Lerp(new Vector3(0F, 0F, aimLimits.x), 
                 new Vector3(0F, 0F, aimLimits.y), _aimAlpha);
 
-            camera.ValidateCameraRotation(_aimAlpha);
+            characterCamera.ValidateCameraRotation(_aimAlpha);
         }
 
         #endregion
