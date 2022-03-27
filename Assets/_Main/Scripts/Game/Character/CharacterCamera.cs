@@ -1,6 +1,7 @@
 using System;
 using Cinemachine;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,9 +11,10 @@ namespace Com.MyCompany.MyGame.Camera
     {
         #region Private Serialized Fields
 
+        [TitleGroup("References")]
+        
         [SerializeField] private CameraPresetContainer_SO presetContainer = null;
 
-        [Tooltip("The Character's TPS Camera")]
         [SerializeField] private CinemachineVirtualCamera playerCamera = null;
         
         #endregion
